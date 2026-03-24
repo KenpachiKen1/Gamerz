@@ -1,2 +1,2 @@
 # Gamerz
-INST347 project by Virgil Padua, 
+INST347 project by Virgil Padua, Kenneth Fadojutimi
