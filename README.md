@@ -39,3 +39,4 @@ Game Haven follows a cloud-based architecture:
     - Azure Cosmos DB (Messages, Posts)
 - Storage: Azure Blob Storage (Media storage)
 - Endpoint testing: Postman
+
