@@ -2,9 +2,29 @@
 
 import "../styles/signup.css";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
 
 export default function Login() {
     const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const handleLogin = () => {
+        if (!email || !password) {
+            setError("Please fill in all fields");
+            return;
+        }
+
+        setError("");
+        setLoading(true);
+
+        setTimeout(() => {
+            setLoading(false);
+            navigate("/");
+        }, 1000);
+    };
+    const [loading, setLoading] = useState(false);
 
     return (
         <div className="signup-container">
@@ -19,23 +39,29 @@ export default function Login() {
                 <div className="form-box">
                     <h2>Login</h2>
 
-                    <input placeholder="Email" className="input" />
+                    <input
+                        placeholder="Email"
+                        className="input"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
 
                     <input
                         type="password"
                         placeholder="Password"
                         className="input"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
-                    
+
+                    {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+
                     <button
                         className="button"
-                        onClick={() => {
-                            // later: send data to backend
-
-                            navigate("/"); // redirect
-                        }}
+                        onClick={handleLogin}
+                        disabled={loading}
                     >
-                        Login
+                        {loading ? "Logging in..." : "Login"}
                     </button>
 
                     <p style={{ marginTop: "10px" }}>
