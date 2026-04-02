@@ -1,9 +1,9 @@
-// src/pages/Signup.tsx
+// src/pages/Login.tsx
 
 import "../styles/signup.css";
 import { useNavigate } from "react-router-dom";
 
-export default function Signup() {
+export default function Login() {
     const navigate = useNavigate();
 
     return (
@@ -11,17 +11,22 @@ export default function Signup() {
             {/* Left Side */}
             <div className="left-panel">
                 <h1>Game Haven</h1>
-                <p>Join the ultimate, all-in-one gaming social hub!</p>
+                <p>Welcome back! Jump back into the haven.</p>
             </div>
 
             {/* Right Side */}
             <div className="right-panel">
                 <div className="form-box">
-                    <h2>Create Account</h2>
+                    <h2>Login</h2>
 
-                    <input placeholder="Username" className="input" />
                     <input placeholder="Email" className="input" />
-                    <input type="password" placeholder="Password" className="input" />
+
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        className="input"
+                    />
+                    
                     <button
                         className="button"
                         onClick={() => {
@@ -30,16 +35,16 @@ export default function Signup() {
                             navigate("/"); // redirect
                         }}
                     >
-                        Sign Up
+                        Login
                     </button>
 
                     <p style={{ marginTop: "10px" }}>
-                        Already have an account?{" "}
+                        Don’t have an account?{" "}
                         <span
                             style={{ color: "#38bdf8", cursor: "pointer" }}
-                            onClick={() => navigate("/login")}
+                            onClick={() => navigate("/signup")}
                         >
-                            Login
+                            Sign up
                         </span>
                     </p>
                 </div>
