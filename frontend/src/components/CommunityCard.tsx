@@ -1,14 +1,14 @@
-// src/components/GameCard.tsx
+// src/components/CommunityCard.tsx
 
 type Props = {
     title: string;
 };
 
-export default function GameCard({ title }: Props) {
+export default function CommunityCard({ title }: Props) {
     return (
         <div style={{ border: "1px solid gray", padding: "10px" }}>
             <p>{title}</p>
-            <button>View</button>
+            <button>Join</button>
         </div>
     );
 }
