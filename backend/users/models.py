@@ -9,7 +9,7 @@ class User(AbstractUser):
     favorite_game = models.ForeignKey('games.Game', on_delete=models.SET_NULL, blank=True, null=True, related_name='favorite_game')
     main_platform = models.CharField(max_length=50, blank=True, null=True, editable=True)
     wishlist_name = models.CharField(max_length=255, blank=True, null=True, editable=True)
-
+    firebase_uid = models.CharField(max_length=255, blank=True, null=True, editable=False, unique=True)
     def __str__(self):
         return f"username: {self.username} password: {self.password}, email: {self.email}, first name: {self.first_name}, last name: {self.last_name}"
 

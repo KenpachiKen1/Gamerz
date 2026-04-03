@@ -17,8 +17,8 @@ from firebase_admin import auth, credentials
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-#cred = credentials.Certificate(os.path.join(BASE_DIR, "GameHaven/serviceAccountKey.json"))
-#firebase_admin.initialize_app(cred)
+cred = credentials.Certificate(os.path.join(BASE_DIR, "GameHaven/serviceAccountKey.json"))
+firebase_admin.initialize_app(cred)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -115,6 +115,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'users.authentication.FirebaseAuthentication',
+        ]
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -131,3 +137,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+

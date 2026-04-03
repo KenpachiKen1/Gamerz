@@ -3,13 +3,12 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.serializers import *
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from games.models import Game
 from django.shortcuts import get_object_or_404
 from games.services import add_game_to_db
 from games.serializers import GameReadSerializer
-from users.services import *
+from .authentication import *
 from django.db.models import Q
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -26,7 +25,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    @action(detail = False, methods=['POST'])
+    @action(detail = False, methods=['POST'], permission_classes=[AllowAny])
     def signup(self, request):
         try:
             serializer = self.get_serializer(data = request.data)
@@ -42,23 +41,25 @@ class UserViewSet(viewsets.ModelViewSet):
             elif User.objects.filter(email = email).exists():
                 return Response({"error": "There is an account with this email already"}, status = status.HTTP_400_BAD_REQUEST)
             
-            user = User.objects.create_user(username=username, email=email,
+            User.objects.create_user(username=username, email=email,
                                              password = request.data.get("password"), 
                                             first_name = serializer.validated_data.get("first_name"), 
-                                            last_name = serializer.validated_data.get("last_name"))
+                                            last_name = serializer.validated_data.get("last_name"), uid = request.data.get("uid") )
             
 
+            account = FirebaseAuthentication.authenticate_signup(self, request)
+            
             #need to add auth tokens addition here.
-
-        return 
+        return Response({"Success": "Account Created!", "data": account}, status=status.HTTP_201_CREATED)
     #will fully develop this when firebase auth is set-up
     @action(detail = False, methods=['POST'])
     def login(self, request):
-        username = request.data.get("username")
-        if not User.objects.filter(username = username).exists():
-            return Response({"error": "There is no account with this username"}, status = status.HTTP_400_BAD_REQUEST)
+        user = FirebaseAuthentication.authenticate_login(self, request)
+
+        if not user:
+            return Response({"Error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return
+            return Response({"success": user}, status=status.HTTP_200_OK)
         
     @action(detail = False, methods=['DELETE'])
     def delete_account(self, request):
