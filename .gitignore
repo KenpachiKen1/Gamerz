@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 .env
 node_modules/
-serviceAccountKey.json
+serviceAccountKey.jsonbackend/GameHaven/serviceAccountKey.json
+backend/GameHaven/serviceAccountKey.json
