@@ -1,7 +1,7 @@
 # Game Haven
 
 
-## Description-
+## Description
 Game Haven is a cloud-based web application designed to bring gaming communities together in one place. It combines the core features of platforms like Discord, Reddit, and YouTube, allowing users to connect, share content, and discuss games without switching between multiple apps.
 
 Game Haven provides a centralized platform where users can:
