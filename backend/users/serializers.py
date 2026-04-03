@@ -54,7 +54,7 @@ class UserWriteSerializer(serializers.ModelSerializer): #will be using this just
         return value
     
 
-class UserWishlistReadSerializer(serializers.ModelSerializer):
+class WishlistReadSerializer(serializers.ModelSerializer):
     game = GameReadSerializer(many=True, read_only=True)
     
     class Meta:
