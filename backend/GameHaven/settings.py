@@ -9,16 +9,19 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-import os
 from pathlib import Path
-import firebase_admin
-from firebase_admin import auth, credentials
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import os
+import firebase_admin
+from firebase_admin import credentials, auth
 
-#cred = credentials.Certificate(os.path.join(BASE_DIR, "GameHaven/serviceAccountKey.json"))
-#firebase_admin.initialize_app(cred)
+firebase_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+
+if firebase_path and os.path.exists(firebase_path) and not firebase_admin._apps:
+    cred = credentials.Certificate(firebase_path)
+    firebase_admin.initialize_app(cred)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
