@@ -4,4 +4,7 @@ __pycache__/
 .env
 node_modules/
 backend/GameHaven/serviceAccountKey.json
-
+.env
+backend/.env
+frontend/.env
+*.env
