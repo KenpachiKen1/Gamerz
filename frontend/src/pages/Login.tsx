@@ -10,7 +10,9 @@ export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const handleLogin = () => {
+    const [loading, setLoading] = useState(false);
+
+    const handleLogin = async () => {
         if (!email || !password) {
             setError("Please fill in all fields");
             return;
@@ -19,12 +21,17 @@ export default function Login() {
         setError("");
         setLoading(true);
 
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            // later: replace with Firebase login
+            localStorage.setItem("token", "fake-token");
+
             navigate("/");
-        }, 1000);
+        } catch (err) {
+            setError("Login failed");
+        } finally {
+            setLoading(false);
+        }
     };
-    const [loading, setLoading] = useState(false);
 
     return (
         <div className="signup-container">
@@ -43,7 +50,10 @@ export default function Login() {
                         placeholder="Email"
                         className="input"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                            setError("");
+                        }}
                     />
 
                     <input
@@ -51,7 +61,10 @@ export default function Login() {
                         placeholder="Password"
                         className="input"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                            setError("");
+                        }}
                     />
 
                     {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
