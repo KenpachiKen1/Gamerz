@@ -7,7 +7,7 @@ from .serializers import UserWriteSerializer
 
 class FirebaseAuthentication(authentication.BaseAuthentication):
 
-   def authenticate_signup(self, request):
+   def authenticate_signup(self, request, user: User): #should just add the uid to the user.
       token = str(request.headers.get("Authorization"))
 
       if not token:
@@ -26,25 +26,10 @@ class FirebaseAuthentication(authentication.BaseAuthentication):
       except Exception as e:
         return str(e)
             
-      try: 
-            serializer = UserWriteSerializer(data = request.data)
-            if serializer.is_valid(raise_exception=True):
-               email = serializer.validated_data.get("email")
-            username =  serializer.validated_data.get("username")
-           
-            if User.objects.filter(username = username).exists():
-               return {"error" : "There is an account with this username"}
-
-            elif User.objects.filter(email = email).exists():
-             return {"error" : "An account with tbis email exists"}
-
-            
-            user = User.objects.create_user(username=username, email=email,
-                                             password = request.data.get("password"), 
-                                            first_name = serializer.validated_data.get("first_name"), 
-                                            last_name = serializer.validated_data.get("last_name"), uid = uid)
-      except Exception as e:
-            return {"error" : str(e)}
+      user.firebase_uid = uid
+      user.save()
+    
+          
       return user
    
 

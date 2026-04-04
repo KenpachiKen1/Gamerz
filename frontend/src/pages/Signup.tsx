@@ -3,7 +3,7 @@
 import "../styles/signup.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { createAccount } from "../api/api";
+import { createAccount } from "../context/api";
 
 
 export default function Signup() {
