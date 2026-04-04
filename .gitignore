@@ -1,3 +1,4 @@
+
 server/venv/
 __pycache__/
 *.pyc
@@ -8,3 +9,6 @@ backend/GameHaven/serviceAccountKey.json
 backend/.env
 frontend/.env
 *.env
+
+backend/GameHaven/serviceAccountKey.json
+serviceAccountKey.json
