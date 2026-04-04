@@ -41,13 +41,13 @@ class UserViewSet(viewsets.ModelViewSet):
             elif User.objects.filter(email = email).exists():
                 return Response({"error": "There is an account with this email already"}, status = status.HTTP_400_BAD_REQUEST)
             
-            User.objects.create_user(username=username, email=email,
+            user = User.objects.create_user(username=username, email=email,
                                              password = request.data.get("password"), 
                                             first_name = serializer.validated_data.get("first_name"), 
-                                            last_name = serializer.validated_data.get("last_name"), uid = request.data.get("uid") )
+                                            last_name = serializer.validated_data.get("last_name"))
             
 
-            account = FirebaseAuthentication.authenticate_signup(self, request)
+            account = FirebaseAuthentication.authenticate_signup(self, request, user)
             
             #need to add auth tokens addition here.
         return Response({"Success": "Account Created!", "data": account}, status=status.HTTP_201_CREATED)
