@@ -22,6 +22,13 @@ class UserReadSerializer(serializers.ModelSerializer):
                    ]
         
 class UserWriteSerializer(serializers.ModelSerializer): #will be using this just for checking mainly
+    class Meta:
+        model = User
+        fields = ["email", "username", "password", "first_name", "last_name"]
+        extra_kwargs = {
+            "password": {"write_only": True}
+        }
+
     
     def validate_username(self, value):
         s = value.lower() #the username

@@ -8,12 +8,12 @@ import { UserProvider } from "./context/ProfileContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
-      <UserProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
+        <UserProvider>
           <App />
-        </BrowserRouter>
-      </UserProvider>
-    </AuthProvider>
+        </UserProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </StrictMode>
 );

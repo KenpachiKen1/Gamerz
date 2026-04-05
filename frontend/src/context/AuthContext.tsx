@@ -60,15 +60,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     async function signup(formData: SignupForm): Promise<SignupResponse>{
 
-        try { 
+
+        console.log("1")
+      try { 
+          
+            console.log("2");
+
             setAuthError(null);
-            const { email, password, username, first_name, last_name } = formData
+        const { email, password, username, first_name, last_name } = formData
+        
+                console.log(`${email}, ${username}, ${password}`);
+
             
             const credentials = await createUserWithEmailAndPassword(auth, email, password); //creating the firebase id for the user.
-
+            console.log('created auth credentials')
             const token = await credentials.user.getIdToken();
 
-            const response = await fetch('http://127.0.0.1:8000/api/users/signup', {
+            const response = await fetch('http://127.0.0.1:8000/api/users/signup/', {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",
@@ -88,9 +96,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             return data
         } catch (err) {
-            const message = err instanceof Error ? err.message : "An unknown error happened."
-            setAuthError(message)
-            throw err
+            console.error("Firebase signup error:", err);
+
+            const message =
+              err instanceof Error ? err.message : "An unknown error happened.";
+
+            setAuthError(message);
+            throw err;
         }
     }
 

@@ -3,7 +3,7 @@
 import "../styles/signup.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { createAccount } from "../context/api";
+import { useAuth } from "../context/AuthContext";
 
 
 export default function Signup() {
@@ -12,6 +12,8 @@ export default function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+
+    const { signup } = useAuth();
     const handleSignup = async () => {
         if (!username || !email || !password) {
             setError("Please fill in all fields");
@@ -21,7 +23,7 @@ export default function Signup() {
         setLoading(true);
 
         try {
-            await createAccount({
+            await signup({
                 username,
                 email,
                 password,
@@ -29,15 +31,14 @@ export default function Signup() {
                 last_name: "temp",
             });
 
-            // fake token for now
-            localStorage.setItem("token", "fake-token");
-
-            navigate("/");
         } catch (err) {
             setError("Signup failed");
         } finally {
             setLoading(false);
         }
+
+        navigate("/");
+
     };
     const [loading, setLoading] = useState(false);
 

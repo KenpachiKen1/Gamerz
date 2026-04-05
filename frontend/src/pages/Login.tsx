@@ -3,6 +3,7 @@
 import "../styles/signup.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 
 export default function Login() {
@@ -11,6 +12,8 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
+        const { login } = useAuth();
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -23,14 +26,16 @@ export default function Login() {
 
         try {
             // later: replace with Firebase login
-            localStorage.setItem("token", "fake-token");
+            await login( email, password)
 
-            navigate("/");
         } catch (err) {
             setError("Login failed");
         } finally {
             setLoading(false);
         }
+
+        navigate("/");
+
     };
 
     return (
