@@ -20,6 +20,7 @@ import firebase_admin
 from firebase_admin import credentials, auth
 
 firebase_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+print(firebase_path)
 
 if firebase_path and os.path.exists(firebase_path) and not firebase_admin._apps:
     cred = credentials.Certificate(firebase_path)

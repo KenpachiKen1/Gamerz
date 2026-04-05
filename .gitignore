@@ -12,3 +12,14 @@ frontend/.env
 
 backend/GameHaven/serviceAccountKey.json
 serviceAccountKey.json
+
+__pycache__/
+*.pyc
+*.pyo
+venv/
+backend/venv/
+db.sqlite3
+backend/db.sqlite3
+.env
+*.env
+backend/GameHaven/serviceAccountKey.json

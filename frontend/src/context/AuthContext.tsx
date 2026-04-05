@@ -75,6 +75,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             const credentials = await createUserWithEmailAndPassword(auth, email, password); //creating the firebase id for the user.
             console.log('created auth credentials')
             const token = await credentials.user.getIdToken();
+        
+            console.log(token); //for backend testing
 
             const response = await fetch('http://127.0.0.1:8000/api/users/signup/', {
                 method: 'POST',
