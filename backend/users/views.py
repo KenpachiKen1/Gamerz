@@ -14,9 +14,22 @@ from django.db.models import Q
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.select_related('favorite_game').all()
     permission_classes = [IsAuthenticated]
-    
+
+
+    def get_authenticators(self):
+        action = getattr(self, "action", None)
+        if action in ["signup", "login"]:
+            return []
+        return super().get_authenticators()
+
+    def get_permissions(self):
+        action = getattr(self, "action", None)
+        if action in ["signup", "login"]:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
     def get_serializer_class(self):
-        if self.action in ['create', 'update', 'partial_update']:
+        if self.action in ['create', 'update', 'partial_update', 'signup']:
             return UserWriteSerializer
         return UserReadSerializer
     
@@ -27,39 +40,98 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail = False, methods=['POST'], permission_classes=[AllowAny])
     def signup(self, request):
+        auth_header = request.headers.get("Authorization")
+
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return Response(
+                {"error": "Authorization header must be Bearer <token>."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        token = auth_header.split("Bearer ")[1].strip()
+
         try:
-            serializer = self.get_serializer(data = request.data)
-        except Exception as e:
-            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
-        
-        if serializer.is_valid():
-            email = serializer.validated_data.get("email")
-            username =  serializer.validated_data.get("username")
-           
-            if User.objects.filter(username = username).exists():
-                return Response({"error": "There is an account with this username already"}, status = status.HTTP_400_BAD_REQUEST)
-            elif User.objects.filter(email = email).exists():
-                return Response({"error": "There is an account with this email already"}, status = status.HTTP_400_BAD_REQUEST)
-            
-            user = User.objects.create_user(username=username, email=email,
-                                             password = request.data.get("password"), 
-                                            first_name = serializer.validated_data.get("first_name"), 
-                                            last_name = serializer.validated_data.get("last_name"))
-            
+            decoded_token = auth.verify_id_token(token)
+            uid = decoded_token["uid"]
+        except Exception:
+            return Response(
+                {"error": "Invalid or expired Firebase token."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
-            account = FirebaseAuthentication.authenticate_signup(self, request, user)
-            
-            #need to add auth tokens addition here.
-        return Response({"Success": "Account Created!", "data": account}, status=status.HTTP_201_CREATED)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data.get("email")
+        username = serializer.validated_data.get("username")
+
+        if User.objects.filter(firebase_uid=uid).exists():
+            return Response(
+                {"error": "A Django account already exists for this Firebase user."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(username=username).exists():
+            return Response(
+                {"error": "There is an account with this username already"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(email=email).exists():
+            return Response(
+                {"error": "There is an account with this email already"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=request.data.get("password"),
+            first_name=serializer.validated_data.get("first_name"),
+            last_name=serializer.validated_data.get("last_name"),
+        )
+        user.firebase_uid = uid
+        user.save()
+
+        return Response(
+            {
+                "success": "Account created!",
+                "data": UserReadSerializer(user, context={"request": request}).data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
     #will fully develop this when firebase auth is set-up
-    @action(detail = False, methods=['POST'])
+    @action(detail = False, methods=['POST'], permission_classes=[AllowAny])
     def login(self, request):
-        user = FirebaseAuthentication.authenticate_login(self, request)
+        auth_header = request.headers.get("Authorization")
 
-        if not user:
-            return Response({"Error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({"success": user}, status=status.HTTP_200_OK)
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return Response(
+                {"error": "Authorization header must be Bearer <token>."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        token = auth_header.split("Bearer ")[1].strip()
+
+        try:
+            decoded_token = auth.verify_id_token(token)
+            uid = decoded_token["uid"]
+        except Exception:
+            return Response(
+                {"error": "Invalid or expired Firebase token."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            user = User.objects.get(firebase_uid=uid)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "No Django account exists for this Firebase user."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = UserReadSerializer(user, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
     @action(detail = False, methods=['DELETE'])
     def delete_account(self, request):

@@ -1,8 +1,14 @@
+
 server/venv/
 __pycache__/
 *.pyc
 .env
 node_modules/
-serviceAccountKey.jsonbackend/GameHaven/serviceAccountKey.json
 backend/GameHaven/serviceAccountKey.json
+.env
+backend/.env
+frontend/.env
+*.env
+
 backend/GameHaven/serviceAccountKey.json
+serviceAccountKey.json
