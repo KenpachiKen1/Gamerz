@@ -139,11 +139,11 @@ class UserViewSet(viewsets.ModelViewSet):
         user.delete()
         return Response({'status': 'Account deleted'}, status=status.HTTP_200_OK)
     
-    @action(detail=True, methods=['PATCH'])
-    def update_profile(self, request, pk = None):
-
-        user = get_object_or_404(User, id = pk)
-        serializer =  self.get_serializer(user, data = request.data, many = False)
+    @action(detail=False, methods=['PATCH'])
+    def update_profile(self, request):
+ 
+        user = request.user
+        serializer =  self.get_serializer(user, data = request.data, partial = True)
        
         try: 
             if serializer.is_valid(raise_exception=True):

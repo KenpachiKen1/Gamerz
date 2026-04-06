@@ -24,7 +24,7 @@ class UserReadSerializer(serializers.ModelSerializer):
 class UserWriteSerializer(serializers.ModelSerializer): #will be using this just for checking mainly
     class Meta:
         model = User
-        fields = ["email", "username", "password", "first_name", "last_name"]
+        fields = ["email", "username", "password", "first_name", "last_name", "hours", "profile_picture", "main_platform"]
         extra_kwargs = {
             "password": {"write_only": True}
         }

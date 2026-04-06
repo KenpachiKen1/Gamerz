@@ -44,7 +44,7 @@ def add_game_to_db(game: str) -> Game: #game will be the name of the game chosen
         "platforms" : [platforms["name"] for platforms in details.get("platforms", [])]
     } for details in data] 
         
-        _game = Game.objects.create(name=fields[0]["name"],
+        _game = Game.objects.create(title=fields[0]["name"],
                                     description = fields[0].get("summary"),
                                     released = fields[0].get("release_date"), game_image = fields[0].get("cover_art"))
     except Exception as e:
@@ -52,7 +52,7 @@ def add_game_to_db(game: str) -> Game: #game will be the name of the game chosen
         return {"Something here is buggy" : str(e)}
     try: #handling adding the platofrms: 
         for plat in fields[0].get("platforms", []):
-            platform_obj, isCreated = Platform.objects.get_or_create(platform = plat) #returns a tuple
+            platform_obj, isCreated = Platform.objects.get_or_create(name = plat) #returns a tuple
             _game.platform.add(platform_obj)
         _game.save()
     except Exception as e:
