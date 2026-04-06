@@ -39,7 +39,7 @@ class GameViewSet(viewsets.ModelViewSet):
         #added where clause for hopefully more exact look ups
         body = f"""
         search "{game}"; 
-        fields name, first_release_date, summary, first_release_date, genres.name, websites.url, cover.url, platforms.name, artworks.url;
+        fields id, name, first_release_date, summary, first_release_date, genres.name, websites.url, cover.url, platforms.name, artworks.url;
         limit 30;
         """ #using college football just for testing purposes
         response = post(base_url, headers=headers, data=body)
@@ -48,6 +48,7 @@ class GameViewSet(viewsets.ModelViewSet):
         #datetime.datetime.fromtimestamp(details.get("first_release_date"))
         filtered_results = [
         {
+            "id": details["id"],
             "name": details["name"],
             "cover": details.get("cover").get("url") if details.get("cover") else None, #returns a dictionary with both the ID and the url, I just want the url
             "release_date" : datetime.datetime.fromtimestamp(details["first_release_date"]).date().isoformat() if details.get("first_release_date") else None,  #Converts the date but if there is nothing there it will just be null
@@ -62,22 +63,31 @@ class GameViewSet(viewsets.ModelViewSet):
     def set_fav_game(self, request):
         user = request.user
         game_name = request.data.get("name")
+
+        if not game_name:
+            return Response(
+                {"error": "No game name provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
-            if(Game.objects.filter(name=game_name).exists()): #if the game is in the database already
-                game = Game.objects.get(name=game_name)
-                user.favorite_game = game #No need to access a serializer, I have the game in memory stored in a database, all I need to do is point to that foreign key
-                user.save()
-                return Response({"Favorite Game": f"{game.name}"}, status=status.HTTP_200_OK)
-            else:
-                try:
-                    game = add_game_to_db(game=game_name) #In services.py, also returns the game object itself
-                except Exception as e:
-                    return Response({"Adding to database error" :str(e)}, status = status.HTTP_400_BAD_REQUEST)
-                user.favorite_game = game
-                user.save()
-                return Response({"Favorite Game": f"{game.name}"}, status=status.HTTP_200_OK)
+            game = Game.objects.filter(title=game_name).first()
+
+            if not game:
+                game = add_game_to_db(game_name)
+
+            user.favorite_game = game
+            user.save()
+
+            return Response(
+                {"Favorite Game": game.title},
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
-            return Response({"Adding game error" :str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"Adding game error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         
     @action(detail=False, methods=['GET']) 
     def get_fav_game(self, request):
@@ -96,8 +106,8 @@ class GameViewSet(viewsets.ModelViewSet):
         title = request.data.get("game")
 
         try:
-            if Game.objects.filter(name=title).exists():
-                game = Game.objects.get(name=title)
+            if Game.objects.filter(title=title).exists():
+                game = Game.objects.get(title=title)
             else:
                 game = add_game_to_db(title)
 

@@ -86,7 +86,7 @@ export default function Login() {
                         Don’t have an account?{" "}
                         <span
                             style={{ color: "#38bdf8", cursor: "pointer" }}
-                            onClick={() => navigate("/signup")}
+                            onClick={() => navigate("/")}
                         >
                             Sign up
                         </span>

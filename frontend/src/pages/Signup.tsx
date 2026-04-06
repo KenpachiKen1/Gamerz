@@ -37,7 +37,7 @@ export default function Signup() {
             setLoading(false);
         }
 
-        navigate("/");
+        navigate("/questionnaire");
 
     };
     const [loading, setLoading] = useState(false);

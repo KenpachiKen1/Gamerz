@@ -32,6 +32,9 @@ class Game(models.Model):
     store = models.URLField(null=True, max_length=200, editable=True, blank=True)
     tags = models.ManyToManyField(Tags, blank=True) #The Tags associated with each game
 
+    def __str__(self):
+        return f"{self.title}"
+
 
 class AuthToken(models.Model):
     id = models.PositiveSmallIntegerField(primary_key=True, default=1, editable=False) #defaults so that anytime i add a new token it'll always be one
