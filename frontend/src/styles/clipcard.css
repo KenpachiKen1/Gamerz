@@ -1,0 +1,57 @@
+/* src/styles/clipcard.css */
+
+.clip-card {
+    position: relative;
+    width: 200px;
+    height: 280px;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #000;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clip-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Video */
+.clip-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Overlay (bottom fade) */
+.clip-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+}
+
+.clip-user {
+    font-size: 12px;
+    color: #38bdf8;
+    margin: 0;
+}
+
+.clip-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 2px 0 0;
+}
+
+.clip-user {
+    font-size: 12px;
+    color: #38bdf8;
+    margin: 0;
+    cursor: pointer;
+}
+
+.clip-user:hover {
+    text-decoration: underline;
+}
