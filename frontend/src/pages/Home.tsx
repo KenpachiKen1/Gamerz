@@ -155,12 +155,16 @@ export default function Home() {
 
                         <div className="feed">
                             {posts.map((post) => (
-                                <div
-                                    key={post.id}
-                                    className="post"
-                                    onClick={() => navigate(`/profile/${post.user}`)}
-                                >
-                                    <h4>{post.user}</h4>
+                                <div key={post.id} className="post">
+                                    <h4
+                                        className="username"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/profile/${post.user}`);
+                                        }}
+                                    >
+                                        @{post.user}
+                                    </h4>
                                     <p>{post.content}</p>
 
                                     {post.hasClip && (

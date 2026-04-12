@@ -1,0 +1,52 @@
+.profile-container {
+    padding: 40px;
+    background-color: #0f172a;
+    color: white;
+    min-height: 100vh;
+}
+
+/* Header */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #334155;
+}
+
+/* User info */
+.user-info h2 {
+    margin: 0;
+}
+
+.user-info p {
+    color: #cbd5e1;
+    margin: 5px 0;
+}
+
+/* Stats */
+.stats {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Sections */
+.profile-section {
+    margin-top: 30px;
+}
+
+/* Clip grid */
+.clip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}

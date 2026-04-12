@@ -10,7 +10,7 @@ type ClipCardProps = {
 
 export default function ClipCard({
     title,
-    videoUrl = "https://www.w3schools.com/html/mov_bbb.mp4",
+    videoUrl = "https://38613882-69f4-4e51-b230-0779359f369f.mdnplay.dev/shared-assets/videos/flower.webm",
     username = "User",
 }: ClipCardProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
