@@ -1,0 +1,92 @@
+.community-container {
+    padding: 20px;
+    background-color: #0f172a;
+    color: white;
+    min-height: 100vh;
+}
+
+/* Header */
+.community-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.join-btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background-color: #38bdf8;
+    cursor: pointer;
+}
+
+.join-btn:hover {
+    background-color: #0ea5e9;
+}
+
+/* Layout */
+.community-content {
+    display: flex;
+    gap: 30px;
+}
+
+/* Posts */
+.posts-section {
+    flex: 3;
+}
+
+.post-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.post-input input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+}
+
+.post-input button {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    background-color: #22c55e;
+}
+
+.post {
+    background-color: #1e293b;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.username {
+    color: #38bdf8;
+    cursor: pointer;
+}
+
+.username:hover {
+    text-decoration: underline;
+}
+
+/* Members */
+.members-section {
+    flex: 1;
+    background-color: #1e293b;
+    padding: 15px;
+    border-radius: 10px;
+    height: fit-content;
+}
+
+.member {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.member:hover {
+    background-color: #334155;
+}
