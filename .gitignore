@@ -23,3 +23,10 @@ backend/db.sqlite3
 .env
 *.env
 backend/GameHaven/serviceAccountKey.json
+
+__pycache__/
+*.pyc
+
+backend/GameHaven/__pycache__/
+backend/games/__pycache__/
+backend/users/__pycache__/
