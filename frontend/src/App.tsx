@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
+import Community from "./pages/Community";
 
 import ProtectedRoutes from "./components/ProtectedRoutes";
 
@@ -19,6 +20,7 @@ function App() {
         <Route path="/questionnaire" element={<Questionnaire />} />
         <Route path="/home" element={<Home />} />
         <Route path="/profile/:username" element={<Profile />} />
+        <Route path="/community/:id" element={<Community />} />
       </Route>
     </Routes>
   );

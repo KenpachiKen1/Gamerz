@@ -32,11 +32,27 @@ export default function Home() {
     ];
 
     const posts = [
-        { id: 1, user: "virgil25", content: "Check this clip!", hasClip: true },
-        { id: 2, user: "jalen16", content: "Looking for squad", hasClip: false },
-        { id: 3, user: "bryson09", content: "yo there's a new update!", hasClip: false },
-        { id: 4, user: "kenneth88", content: "Look at this new skin!", hasClip: false },
-        { id: 5, user: "kenneth88", content: "What's up", hasClip: false }
+        {
+            id: 1,
+            user: "virgil25",
+            content: "Check this clip!",
+            videoUrl: "/videos/clip1.mp4",
+        },
+        {
+            id: 2,
+            user: "jalen16",
+            content: "Looking for a squad",
+        },
+        {
+            id: 3,
+            user: "kenneth88",
+            content: "yo there's a new update!",
+        },
+        {
+            id: 4,
+            user: "bryson09",
+            content: "Anyone recommend any new games?",
+        },
     ];
 
     const clips = [
@@ -60,7 +76,7 @@ export default function Home() {
         },
         {
             id: 4,
-            title: "we in the bugs nest",
+            title: "In the bugs nest",
             username: "bryson09",
             videoUrl: "/videos/clip4.mp4",
         },
@@ -72,7 +88,7 @@ export default function Home() {
         },
         {
             id: 6,
-            title: "cuttin up in assetto",
+            title: "cutting up in assetto",
             username: "jalen16",
             videoUrl: "/videos/clip6.mp4",
         },
@@ -138,7 +154,9 @@ export default function Home() {
                                 <button
                                     key={c.id}
                                     className="community-item"
-                                    onClick={() => navigate(`/community/${c.id}`)}
+                                    onClick={() =>
+                                        navigate(`/community/${c.name.toLowerCase().replace(/\s+/g, "-")}`)
+                                    }
                                 >
                                     <span>{c.name}</span>
                                     <span className="community-action">Open</span>
@@ -160,15 +178,19 @@ export default function Home() {
                                         className="username"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            navigate(`/profile/${post.user}`);
+                                            navigate(`/profile/${post.user}`); {/* navigate(`/profile/${post.userId}`) change to this accounts are ready */ }
                                         }}
                                     >
                                         @{post.user}
                                     </h4>
                                     <p>{post.content}</p>
-
-                                    {post.hasClip && (
-                                        <div className="clip-placeholder">🎥 Clip</div>
+                                    {post.videoUrl && (
+                                        <video
+                                            className="post-video"
+                                            src={post.videoUrl}
+                                            controls
+                                            muted
+                                        />
                                     )}
                                 </div>
                             ))}
