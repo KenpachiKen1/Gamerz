@@ -72,7 +72,7 @@ export default function Profile() {
                 <h2>Clips</h2>
 
                 <div className="clip-grid">
-                    {/* 🔥 Replace with backend later *
+                    {/* Replace with backend later *
                     <ClipCard title="Clip 1" username={user.username} />
                     <ClipCard title="Clip 2" username={user.username} />
                     <ClipCard title="Clip 3" username={user.username} />
@@ -97,7 +97,7 @@ export default function Profile() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // 🔥 TEMP (replace with backend later)
+        // TEMP (replace with backend later)
         setTimeout(() => {
             setUser({
                 username,

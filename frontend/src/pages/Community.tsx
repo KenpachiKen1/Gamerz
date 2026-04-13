@@ -19,7 +19,7 @@ export default function Community() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    // ✅ Centralized community data (slug-based)
+    // Centralized community data (slug-based)
     const communities: CommunityType[] = [
         {
             slug: "call-of-duty",
@@ -41,12 +41,12 @@ export default function Community() {
         },
     ];
 
-    // ✅ Find community by slug
+    // Find community by slug
     const community = communities.find((c) => c.slug === id);
 
     const [joined, setJoined] = useState(false);
 
-    // ✅ Post system (local for now, Firebase later)
+    // Post system (local for now, Firebase later)
     const [posts, setPosts] = useState<PostType[]>([
         { id: 1, user: "virgil25", content: "Anyone running ranked?" },
         { id: 2, user: "jalen16", content: "New meta is crazy" },
