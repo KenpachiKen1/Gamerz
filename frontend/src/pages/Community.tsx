@@ -3,44 +3,76 @@ import { useState } from "react";
 import "../styles/community.css";
 
 type CommunityType = {
+    slug: string;
     name: string;
     description: string;
     members: string[];
+};
+
+type PostType = {
+    id: number;
+    user: string;
+    content: string;
 };
 
 export default function Community() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const communityMap: Record<string, CommunityType> = {
-        "call-of-duty": {
+    // ✅ Centralized community data (slug-based)
+    const communities: CommunityType[] = [
+        {
+            slug: "call-of-duty",
             name: "Call of Duty",
             description: "FPS community",
-            members: ["virgil25", "jalen16", "bryson09"],
+            members: ["virgil25", "jalen16", "bryson09", "kenneth88"],
         },
-        minecraft: {
+        {
+            slug: "minecraft",
             name: "Minecraft",
             description: "Creative builders",
             members: ["builder01", "steve22"],
         },
-        fortnite: {
+        {
+            slug: "fortnite",
             name: "Fortnite",
             description: "Battle royale players",
             members: ["pro99", "sweatgod"],
         },
-    };
+    ];
 
-    const community = communityMap[id || ""];
+    // ✅ Find community by slug
+    const community = communities.find((c) => c.slug === id);
 
     const [joined, setJoined] = useState(false);
 
-    const posts = [
+    // ✅ Post system (local for now, Firebase later)
+    const [posts, setPosts] = useState<PostType[]>([
         { id: 1, user: "virgil25", content: "Anyone running ranked?" },
         { id: 2, user: "jalen16", content: "New meta is crazy" },
-    ];
+    ]);
+
+    const [newPost, setNewPost] = useState("");
+
+    const handlePost = () => {
+        if (!newPost.trim()) return;
+
+        const post: PostType = {
+            id: Date.now(),
+            user: "currentUser", // replace with auth user later
+            content: newPost,
+        };
+
+        setPosts([post, ...posts]);
+        setNewPost("");
+    };
 
     if (!community) {
-        return <h1 style={{ color: "white" }}>Community not found</h1>;
+        return (
+            <div style={{ padding: "20px", color: "white" }}>
+                <h1>Community not found</h1>
+            </div>
+        );
     }
 
     return (
@@ -54,7 +86,7 @@ export default function Community() {
                 </div>
 
                 <button
-                    className="join-btn"
+                    className={`join-btn ${joined ? "joined" : ""}`}
                     onClick={() => setJoined(!joined)}
                 >
                     {joined ? "Joined ✓" : "Join"}
@@ -67,11 +99,17 @@ export default function Community() {
                 <div className="posts-section">
                     <h2>Posts</h2>
 
+                    {/* Input */}
                     <div className="post-input">
-                        <input placeholder="Share something..." />
-                        <button>Post</button>
+                        <input
+                            placeholder="Share something..."
+                            value={newPost}
+                            onChange={(e) => setNewPost(e.target.value)}
+                        />
+                        <button onClick={handlePost}>Post</button>
                     </div>
 
+                    {/* Posts */}
                     {posts.map((post) => (
                         <div key={post.id} className="post">
                             <h4

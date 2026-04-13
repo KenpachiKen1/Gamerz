@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Community from "./pages/Community";
+import Game from "./pages/Game";
 
 import ProtectedRoutes from "./components/ProtectedRoutes";
 
@@ -21,6 +22,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/community/:id" element={<Community />} />
+        <Route path="/game/:id" element={<Game />} />
       </Route>
     </Routes>
   );
