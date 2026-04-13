@@ -31,6 +31,48 @@ export default function Home() {
         { id: 3, name: "Fortnite" },
     ];
 
+    const trendingCommunities = [
+        {
+            id: 1,
+            name: "Grand Theft Auto V",
+            members: 62000,
+            image: "/images/grandtheftautov.jpg",
+        },
+        {
+            id: 2,
+            name: "Overwatch",
+            members: 57000,
+            image: "/images/overwatch.jpg",
+        },
+        {
+            id: 3,
+            name: "Rust",
+            members: 49000,
+            image: "/images/rust.jpg",
+        },
+    ];
+
+    const games = [
+        {
+            id: 1,
+            name: "Counter-Strike 2",
+            image: "/images/counter-strike2.jpg",
+            players: "590k online",
+        },
+        {
+            id: 2,
+            name: "Dota2",
+            image: "/images/dota2.jpg",
+            players: "280k online",
+        },
+        {
+            id: 3,
+            name: "Slay the Spire II",
+            image: "/images/slaythespire2.jpg",
+            players: "170k online",
+        },
+    ];
+
     const posts = [
         {
             id: 1,
@@ -227,20 +269,42 @@ export default function Home() {
                     {/* Trending Communities */}
                     <div className="section-card">
                         <h2>Trending Communities</h2>
+
                         <div className="card-row">
-                            <CommunityCard title="Community 1" />
-                            <CommunityCard title="Community 2" />
-                            <CommunityCard title="Community 3" />
+                            {trendingCommunities.map((community) => {
+                                const slug = community.name
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-");
+
+                                return (
+                                    <CommunityCard
+                                        key={community.id}
+                                        name={community.name}
+                                        members={community.members}
+                                        image={community.image}
+                                        onClick={() => navigate(`/community/${slug}`)}
+                                    />
+                                );
+                            })}
                         </div>
                     </div>
 
                     {/* Popular Games */}
                     <div className="section-card">
                         <h2>Popular Games</h2>
+
                         <div className="card-row">
-                            <GameCard title="Game 1" />
-                            <GameCard title="Game 2" />
-                            <GameCard title="Game 3" />
+                            {games.map((game) => (
+                                <GameCard
+                                    key={game.id}
+                                    name={game.name}
+                                    image={game.image}
+                                    players={game.players}
+                                    onClick={() =>
+                                        navigate(`/game/${game.name.toLowerCase().replace(/\s+/g, "-")}`)
+                                    }
+                                />
+                            ))}
                         </div>
                     </div>
 
