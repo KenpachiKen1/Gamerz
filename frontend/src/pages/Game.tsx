@@ -12,7 +12,6 @@ export default function Game() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    // 🔥 Match your Home.tsx games
     const games: GameType[] = [
         {
             slug: "counter-strike-2",
