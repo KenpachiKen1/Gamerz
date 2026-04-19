@@ -318,8 +318,23 @@ export default function Home() {
             </div>
           </div>
 
-          
-          
+          <div className="section-card">
+            <h2>Trending Communities</h2>
+            <div className="card-row">
+              <CommunityCard title="Community 1" />
+              <CommunityCard title="Community 2" />
+              <CommunityCard title="Community 3" />
+            </div>
+          </div>
+
+          <div className="section-card">
+            <h2>Popular Games</h2>
+            <div className="card-row">
+              <GameCard title="Game 1" />
+              <GameCard title="Game 2" />
+              <GameCard title="Game 3" />
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,21 +1,14 @@
 // src/components/GameCard.tsx
 
-interface Props {
-    name: string;
-    image: string;
-    players: string;
-    onClick: () => void;
-}
+type Props = {
+  title: string;
+};
 
-export default function GameCard({ name, image, players, onClick }: Props) {
-    return (
-        <div className="game-card" onClick={onClick}>
-            <img src={image} alt={name} className="game-image" />
-
-            <div className="game-info">
-                <h3>{name}</h3>
-                <p>{players}</p>
-            </div>
-        </div>
-    );
+export default function GameCard({ title }: Props) {
+  return (
+    <div style={{ border: "1px solid gray", padding: "10px" }}>
+      <p>{title}</p>
+      <button>View</button>
+    </div>
+  );
 }
