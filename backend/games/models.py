@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 class Platform(models.Model):
@@ -32,6 +33,23 @@ class Game(models.Model):
     store = models.URLField(null=True, max_length=200, editable=True, blank=True)
     tags = models.ManyToManyField(Tags, blank=True) #The Tags associated with each game
 
+    def save(self, *args, **kwargs):
+        created = self._state.adding
+        super().save(*args, **kwargs)
+
+        if created:
+            from communities.models import Community
+            from chatrooms.models import ChatRoom
+
+            community = Community.objects.create(
+                title=f"{self.title} Community",
+                game=self
+            )
+
+            ChatRoom.objects.create(
+                community=community,
+                name="General"
+            )
     def __str__(self):
         return f"{self.title}"
 

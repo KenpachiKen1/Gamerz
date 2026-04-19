@@ -10,6 +10,8 @@ from games.services import add_game_to_db
 from games.serializers import GameReadSerializer
 from .authentication import *
 from django.db.models import Q
+from .services import send_friend_notification
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.select_related('favorite_game').all()
@@ -180,45 +182,48 @@ class WishlistViewSet(viewsets.ModelViewSet):
         return Response({"Done: " : wishlist.__str__()}, status=status.HTTP_201_CREATED)
     
 
-    @action(detail=True, methods=['PATCH'])
-    def add_to_wishlist(self, request, pk = None): #the pk is the wishlist id
+    @action(detail=False, methods=['PATCH'])
+    def add_to_wishlist(self, request): #the pk is the wishlist id
         user = request.user
-        wishlist = self.get_object() #the desired wishlist
+    
+        wishlist = get_object_or_404(UserWishlist, user = user)
         game = request.data.get("game")
         
-        if wishlist.user is not user:
-            return Response({"error" : "this wishlist's user is not matching to the request's user"}, status=status.HTTP_400_BAD_REQUEST)
-        
             #check if the game exists already, if it does then add it to the wishlist and return, if not add it to the game databse first then to the wishlist
-            if Game.objects.filter(name = game).exists():
-                game = Game.objects.get(name=game_name)
+        if Game.objects.filter(title = game).exists():
+                game = Game.objects.get(title=game)
                 try:
                     wishlist.games.add(game)
                     wishlist.save()
                 except Exception as e:
                         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                return Response({"Success": f"added {game.name} to {wishlist.name}"}, status=status.HTTP_200_OK)
-            else:
+                return Response({"Success": f"added {game.title} to {wishlist.name}"}, status=status.HTTP_200_OK)
+        else:
                 print("Not in the database, going to add it first then add to wishlist")
                 _game = add_game_to_db(game)
                 try:
-                    wishlist.games.add(game)
+                    wishlist.games.add(_game)
                     wishlist.save()
                 except Exception as e:
                         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-                return Response({"Success": f"added {game.name} to {wishlist.name}"}, status=status.HTTP_200_OK)
+                return Response({"Success": f"added {game.title} to {wishlist.name}"}, status=status.HTTP_200_OK)
             
-    @action(detail = True, methods=['PATCH'])
-    def remove_game_from_list(self, request, pk = None):
+    @action(detail = False, methods=['PATCH'])
+    def remove_game_from_list(self, request):
         user = request.user
-        wishlist = self.get_object()
+        wishlist = get_object_or_404(UserWishlist, user = user)
 
-        if wishlist.user is not user:
-            return Response({"error" : "this wishlist's user is not matching to the request's user"}, status=status.HTTP_400_BAD_REQUEST)
-        game = request.data.get("game_name") #will always be a direct match since the user is clicking on the game itself
- 
+
+      
+        game = request.data.get("game") #will always be a direct match since the user is clicking on the game itself
+        
         try:
-            game = Game.objects.get(game)
+            game = Game.objects.get(title = game)
+            if not wishlist.games.filter(id=game.id).exists():
+                return Response(
+                    {"error": "This game isn't in your wishlist"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             wishlist.games.remove(game)
             wishlist.save()
         except Exception as e:
@@ -251,7 +256,298 @@ class WishlistViewSet(viewsets.ModelViewSet):
             return Response({"message": "deleted wishlist successfully"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        
 
+class FriendsViewSet(viewsets.ModelViewSet):
+    queryset = Friendship.objects.select_related("sender", "receiver").all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return self.queryset.filter(Q(sender=user) | Q(receiver=user))
+
+    @action(detail=False, methods=["POST"])
+    def add_friend(self, request):
+        user = request.user
+        friend_username = request.data.get("username")
+
+        if not friend_username:
+            return Response(
+                {"error": "Username is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if friend_username == user.username:
+            return Response(
+                {"error": "You cannot send a friend request to yourself"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        receiver = get_object_or_404(User, username=friend_username)
+
+        existing = Friendship.objects.filter(
+            Q(sender=user, receiver=receiver) | Q(sender=receiver, receiver=user)
+        ).first()
+
+        if existing:
+            return Response(
+                {"error": "A friendship or friend request already exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        friendship = Friendship.objects.create(
+            sender=user,
+            receiver=receiver,
+            status=Friendship.PENDING,
+        )
+
+        serializer = ProfileReadSerializer(receiver, context={"request": request})
+        return Response(
+            {
+                "message": "Friend request sent",
+                "friendship_status": friendship.status,
+                "user": serializer.data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(detail=False, methods=["PATCH"])
+    def accept_friend_request(self, request):
+        user = request.user
+        friend_username = request.data.get("username")
+
+        if not friend_username:
+            return Response(
+                {"error": "Username is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        sender = get_object_or_404(User, username=friend_username)
+
+        friendship = get_object_or_404(
+            Friendship,
+            sender=sender,
+            receiver=user,
+            status=Friendship.PENDING,
+        )
+
+        friendship.status = Friendship.ACCEPTED
+        friendship.save()
+
+        friend_list = get_users_friend_list(user, request=request)
+
+        return Response(
+            {
+                "message": "Friend request accepted",
+                "friends": friend_list,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=False, methods=["DELETE"])
+    def decline_friend_request(self, request):
+        user = request.user
+        friend_username = request.data.get("username")
+
+        if not friend_username:
+            return Response(
+                {"error": "Username is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        sender = get_object_or_404(User, username=friend_username)
+
+        friendship = Friendship.objects.filter(
+            sender=sender,
+            receiver=user,
+            status=Friendship.PENDING,
+        )
+
+        if not friendship.exists():
+            return Response(
+                {"error": "No pending friend request found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        friendship.delete()
+
+        return Response(
+            {"message": "Declined friend request"},
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=False, methods=["GET"])
+    def show_friend_list(self, request):
+        user = request.user
+        friend_list = get_users_friend_list(user, request=request)
+
+        return Response(friend_list, status=status.HTTP_200_OK)
+    @action(detail=False, methods=["GET"])
+    def show_pending_friend_list(self, request):
+        user = request.user
+
+        sent_pending = Friendship.objects.filter(
+            sender=user,
+            status=Friendship.PENDING
+        ).select_related("receiver")
+
+        received_pending = Friendship.objects.filter(
+            receiver=user,
+            status=Friendship.PENDING
+        ).select_related("sender")
+
+        sent_users = [friendship.receiver for friendship in sent_pending]
+        received_users = [friendship.sender for friendship in received_pending]
+
+        sent_friendship_map = {
+            friendship.receiver_id: {
+                "status": friendship.status,
+                "is_sender": True,
+            }
+            for friendship in sent_pending
+        }
+
+        received_friendship_map = {
+            friendship.sender_id: {
+                "status": friendship.status,
+                "is_sender": False,
+            }
+            for friendship in received_pending
+        }
+
+        sent_serializer = ProfileReadSerializer(
+            sent_users,
+            many=True,
+            context={
+                "request": request,
+                "friendship_map": sent_friendship_map,
+            },
+        )
+
+        received_serializer = ProfileReadSerializer(
+            received_users,
+            many=True,
+            context={
+                "request": request,
+                "friendship_map": received_friendship_map,
+            },
+        )
+
+        return Response(
+            {
+                "sent_requests": sent_serializer.data,
+                "received_requests": received_serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=False, methods=["DELETE"])
+    def remove_friend(self, request):
+        user = request.user
+        friend_username = request.data.get("username")
+
+        if not friend_username:
+            return Response(
+                {"error": "Username is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        ex_friend = get_object_or_404(User, username=friend_username)
+
+        deleted_count, _ = Friendship.objects.filter(
+            Q(sender=user, receiver=ex_friend, status=Friendship.ACCEPTED) |
+            Q(sender=ex_friend, receiver=user, status=Friendship.ACCEPTED)
+        ).delete()
+
+        if deleted_count == 0:
+            return Response(
+                {"error": "No accepted friendship found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        friend_list = get_users_friend_list(user, request=request)
+
+        return Response(
+            {
+                "message": "Friend removed successfully",
+                "friends": friend_list,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+   
+    @action(detail=False, methods=["POST"])
+    def user_search(self, request):
+        user = request.user
+        account_name = str(request.data.get("username", "")).strip()
+
+        if account_name == "":
+            accounts = User.objects.exclude(id=user.id)
+        else:
+            accounts = User.objects.filter(
+                username__icontains=account_name
+            ).exclude(id=user.id)
+
+        account_ids = list(accounts.values_list("id", flat=True))
+
+        friendships = Friendship.objects.filter(
+            Q(sender=user, receiver_id__in=account_ids) |
+            Q(receiver=user, sender_id__in=account_ids)
+        ).select_related("sender", "receiver")
+
+        friendship_map = {}
+
+        #using a map instead of having to using a serializer, more efficient.
+        for friendship in friendships:
+            if friendship.sender_id == user.id:
+                other_user_id = friendship.receiver_id
+                friendship_map[other_user_id] = {
+                    "status": friendship.status,
+                    "is_sender": True,
+                }
+            else:
+                other_user_id = friendship.sender_id
+                friendship_map[other_user_id] = {
+                    "status": friendship.status,
+                    "is_sender": False,
+                }
+
+        serializer = UserReadSerializer(
+            accounts,
+            many=True,
+            context={
+                "request": request,
+                "friendship_map": friendship_map,
+            },
+        )
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+def get_users_friend_list(user: User, request):
+    sent_accepted = Friendship.objects.filter(
+        sender=user,
+        status=Friendship.ACCEPTED
+    ).values_list("receiver", flat=True)
+
+    received_accepted = Friendship.objects.filter(
+        receiver=user,
+        status=Friendship.ACCEPTED
+    ).values_list("sender", flat=True)
+
+    friends = User.objects.filter(
+        id__in=list(sent_accepted) + list(received_accepted)
+    ).distinct()
+
+    serializer = ProfileReadSerializer(
+        friends,
+        many=True,
+        context={"request": request},
+    )
+
+    return serializer.data
         
     
 

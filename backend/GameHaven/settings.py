@@ -40,12 +40,14 @@ AUTH_USER_MODEL = 'users.User'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
+    "http://localhost:5174",
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,7 +58,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'games',
+    'communities',
+    'chatrooms',
     'django_extensions',
+
 
 ]
 
@@ -89,6 +94,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'GameHaven.wsgi.application'
+ASGI_APPLICATION = "GameHaven.asgi.application"
 
 
 # Database
@@ -99,6 +105,16 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
 }
 
 

@@ -5,7 +5,11 @@ from .models import *
 
 #Since this is all game related stuff from an API, we don't need to check for profanity
 class GameReadSerializer(serializers.ModelSerializer):
-    platform = serializers.SlugRelatedField(many=True, read_only=True, slug_field="platform")
+    platform = serializers.SlugRelatedField(
+    many=True,
+    read_only=True,
+    slug_field="name"
+)
     tags = serializers.SlugRelatedField(many=True, read_only=True, slug_field="tags")
     
     class Meta:
