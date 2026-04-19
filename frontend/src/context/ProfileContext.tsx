@@ -11,10 +11,10 @@ type UserContextType = {
   error: string | null;
   getProfile: () => Promise<void>;
   create_wishlist: (name: string) => Promise<void>;
-  add_to_wishlist: (wishlist_name: string, game: string) => Promise<void>;
+  add_to_wishlist: ( game: string) => Promise<void>;
   show_wishlist: () => Promise<void>;
   delete_wishlist: () => Promise<void>;
-  remove_from_wishlist: (wishlist_name: string, title: string) => Promise<void>;
+  remove_from_wishlist: (title: string) => Promise<void>;
 };
 
 const userContext = createContext<UserContextType | null>(null);
@@ -42,13 +42,13 @@ export function UserProvider({ children }: UserProviderProps) {
   }, [isAuthenticated]);
 
   async function getProfile(): Promise<void>{
-    const token = getToken();
+    const token = await getToken();
     setError(null)
     try {
       const response = await fetch("http://127.0.0.1:8000/api/users/profile/", {
         method: "GET",
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -73,7 +73,7 @@ export function UserProvider({ children }: UserProviderProps) {
     const token = await getToken();
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/users/create_wishlist/",
+        "http://127.0.0.1:8000/api/wishlists/create_wishlist/",
         {
           method: "POST",
           headers: {
@@ -101,11 +101,14 @@ export function UserProvider({ children }: UserProviderProps) {
   }
 
   async function add_to_wishlist(game: string): Promise<void> {
+
     setError(null)
     const token = await getToken();
     try {
+        console.log("trying to add " + `${game}`);
+
       const response = await fetch(
-        "http://127.0.0.1:8000/api/users/add_to_wishlist/",
+        "http://127.0.0.1:8000/api/wishlists/add_to_wishlist/",
         {
           method: "PATCH",
           headers: {
@@ -114,7 +117,6 @@ export function UserProvider({ children }: UserProviderProps) {
           },
           body: JSON.stringify({
             game: game,
-            wishlist: profile?.wishlist_name,
           }),
         }
       );
@@ -139,7 +141,7 @@ export function UserProvider({ children }: UserProviderProps) {
     const token = await getToken();
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/users/show_wishlist",
+        "http://127.0.0.1:8000/api/wishlists/show_wishlist",
         {
           method: "GET",
           headers: {
@@ -162,7 +164,7 @@ export function UserProvider({ children }: UserProviderProps) {
     const token = await getToken();
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/users/delete_wishlist/",
+        "http://127.0.0.1:8000/api/wishlists/delete_wishlist/",
         {
           method: "DELETE",
           headers: {
@@ -187,7 +189,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/users/remove_from_wishlist/",
+        "http://127.0.0.1:8000/api/wishlists/remove_game_from_list/",
         {
           method: "PATCH",
           headers: {

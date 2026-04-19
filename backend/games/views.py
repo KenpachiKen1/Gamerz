@@ -10,7 +10,7 @@ load_dotenv()
 from rest_framework.permissions import IsAuthenticated
 from requests import post
 import datetime
-
+from communities.models import *
 # Create your views here.
 class GameViewSet(viewsets.ModelViewSet):
     
@@ -79,16 +79,23 @@ class GameViewSet(viewsets.ModelViewSet):
             user.favorite_game = game
             user.save()
 
+            community = getattr(game, "community", None)
+            if community:
+                community.members.add(user)
+
             return Response(
-                {"Favorite Game": game.title},
+                {
+                    "favorite_game": game.title,
+                    "community_joined": community.title if community else None,
+                },
                 status=status.HTTP_200_OK,
             )
+
         except Exception as e:
             return Response(
                 {"Adding game error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
     @action(detail=False, methods=['GET']) 
     def get_fav_game(self, request):
         user = request.user

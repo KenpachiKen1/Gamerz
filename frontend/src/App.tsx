@@ -11,6 +11,7 @@ import ProtectedRoutes from "./components/ProtectedRoutes";
 import Questionnaire from "./components/Questionnaire";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+
 function App() {
   return (
     <Routes>
@@ -20,9 +21,8 @@ function App() {
       <Route element={<ProtectedRoutes />}>
         <Route path="/questionnaire" element={<Questionnaire />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/profile/:username" element={<Profile />} />
-        <Route path="/community/:id" element={<Community />} />
-        <Route path="/game/:id" element={<Game />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/community/:id/:name" element={<Community />} />
       </Route>
     </Routes>
   );

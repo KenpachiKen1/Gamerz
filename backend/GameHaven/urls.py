@@ -22,4 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('users.urls')),  # users endpoints
     path('api/', include('games.urls')),  # games endpoints
+    path('api/', include('communities.urls')), # community endpoints
+    path('api/', include('chatrooms.urls')),  # games endpoints
+
+
 ]
