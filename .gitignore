@@ -30,3 +30,6 @@ __pycache__/
 backend/GameHaven/__pycache__/
 backend/games/__pycache__/
 backend/users/__pycache__/
+
+__pycache__/
+*.pyc
