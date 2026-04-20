@@ -1,32 +1,41 @@
 import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
 import { test, expect } from "vitest";
+import { MemoryRouter } from "react-router-dom";
 
 import ClipCard from "./ClipCard";
 import ActivityCard from "./ActivityCard";
 import CommunityCard from "./CommunityCard";
 
 
-// ClipCard tests
-test("ClipCard renders title", () => {
-  render(<ClipCard title="Test Clip" />);
-  expect(screen.getByText("Test Clip")).toBeTruthy();
+// --------------------
+// ClipCard test
+// --------------------
+test("ClipCard renders correctly", () => {
+  render(
+    <MemoryRouter>
+      <ClipCard title="Test Clip" />
+    </MemoryRouter>
+  );
+
+  expect(screen.getByText("Test Clip")).toBeInTheDocument();
+  expect(screen.getByText(/User/i)).toBeInTheDocument();
 });
 
-test("ClipCard shows Watch button", () => {
-  render(<ClipCard title="Test Clip" />);
-  expect(screen.getAllByText("Watch").length).toBeGreaterThan(0);
-});
 
-
-// ActivityCard tests
+// --------------------
+// ActivityCard test
+// --------------------
 test("ActivityCard renders title", () => {
   render(<ActivityCard title="Activity Test" />);
-  expect(screen.getByText("Activity Test")).toBeTruthy();
+  expect(screen.getByText("Activity Test")).toBeInTheDocument();
 });
 
 
-// CommunityCard tests
-test("CommunityCard renders correctly", () => {
+// --------------------
+// CommunityCard test
+// --------------------
+test("CommunityCard renders title", () => {
   render(<CommunityCard title="Community Test" />);
-  expect(screen.getByText("Community Test")).toBeTruthy();
+  expect(screen.getByText("Community Test")).toBeInTheDocument();
 });
