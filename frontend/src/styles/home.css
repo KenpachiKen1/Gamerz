@@ -19,7 +19,7 @@
 
 .main-content {
     flex: 2;
-    min-width: 0;
+    min-width: 1;
 }
 
 .activity-feed {
