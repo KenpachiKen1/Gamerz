@@ -102,33 +102,40 @@
     flex-shrink: 0;
 }
 
-.btn-join {
+/* Unfollow state — subtle sky blue, matches the site's #38bdf8 palette */
+.btn-unfollow {
     padding: 8px 22px;
     border-radius: 8px;
     border: 1px solid rgba(56, 189, 248, 0.35);
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.12);
+    color: #7dd3fc;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: background 0.2s, border-color 0.2s;
 }
 
-.btn-join:hover {
-    background: rgba(56, 189, 248, 0.25);
-    border-color: rgba(56, 189, 248, 0.6);
+.btn-unfollow:hover {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: rgba(56, 189, 248, 0.55);
 }
 
-.btn-joined {
+/* Following state — green to signal active membership */
+.btn-following {
     padding: 8px 22px;
     border-radius: 8px;
-    border: 1px solid rgba(56, 189, 248, 0.6);
-    background: rgba(56, 189, 248, 0.2);
-    color: #38bdf8;
+    border: 1px solid rgba(74, 222, 128, 0.45);
+    background: rgba(74, 222, 128, 0.12);
+    color: #4ade80;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-following:hover {
+    background: rgba(74, 222, 128, 0.2);
+    border-color: rgba(74, 222, 128, 0.65);
 }
 
 /* ── Tab Bar ── */

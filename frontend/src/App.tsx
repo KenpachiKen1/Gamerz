@@ -10,7 +10,8 @@ import ProtectedRoutes from "./components/ProtectedRoutes";
 import Questionnaire from "./components/Questionnaire";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-
+import SearchResults from "./pages/SearchResults";
+import UserProfile from "./pages/UserProfile";
 function App() {
   return (
     <Routes>
@@ -21,7 +22,9 @@ function App() {
         <Route path="/questionnaire" element={<Questionnaire />} />
         <Route path="/home" element={<Home />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/:username" element={<UserProfile />} />
         <Route path="/community/:id/:name" element={<Community />} />
+        <Route path="/search" element={<SearchResults />} />
       </Route>
     </Routes>
   );

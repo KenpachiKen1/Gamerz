@@ -29,7 +29,12 @@ __pycache__/
 
 backend/GameHaven/__pycache__/
 backend/games/__pycache__/
+<<<<<<< HEAD
 backend/users/__pycache__/
 
 __pycache__/
 *.pyc
+=======
+backend/users/__pycache__/__pycache__/
+*.pyc
+>>>>>>> kenneth

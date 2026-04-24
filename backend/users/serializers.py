@@ -11,6 +11,7 @@ import re
 p = Path(settings.BASE_DIR) / "GameHaven" / "profanity_wordlist.txt"
 
 class UserReadSerializer(serializers.ModelSerializer):
+    favorite_game = GameReadSerializer(read_only=True)
     class Meta:
         model = User
         exclude = ['password', 
@@ -62,7 +63,7 @@ class UserWriteSerializer(serializers.ModelSerializer): #will be using this just
 
                 if pattern.search(s):
                     raise serializers.ValidationError(
-                        f"This post contains '{word}' which is banned!"
+                        f"This wishlist name contains '{word}' which is banned!"
                     )
 
         return value
@@ -94,7 +95,7 @@ class WishlistWriteSerializer(serializers.ModelSerializer):
 
                 if pattern.search(s):
                     raise serializers.ValidationError(
-                        f"This post contains '{word}' which is banned!"
+                        f"This wishlist contains '{word}' which is banned!"
                     )
 
         return value

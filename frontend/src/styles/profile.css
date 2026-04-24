@@ -1,5 +1,3 @@
-
-
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
  
 /* ── Base ── */
@@ -207,6 +205,142 @@
     color: white !important;
 }
  
+/* ── Profile action row (friendship buttons) ── */
+.profile-action-row {
+    margin-bottom: 10px;
+}
+
+.profile-action-btn {
+    padding: 7px 18px;
+    border-radius: 8px;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.12);
+    color: #7dd3fc;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.profile-action-btn:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: rgba(56, 189, 248, 0.55);
+}
+
+.profile-action-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Accept / pending-received variant — green */
+.profile-action-btn.secondary {
+    border-color: rgba(148, 163, 184, 0.25);
+    background: transparent;
+    color: #64748b;
+}
+
+.profile-action-btn.secondary:hover:not(:disabled) {
+    background: rgba(148, 163, 184, 0.08);
+    border-color: rgba(148, 163, 184, 0.4);
+    color: #94a3b8;
+}
+
+/* Remove friend — red/danger */
+.profile-action-btn.danger {
+    border-color: rgba(248, 113, 113, 0.35);
+    background: rgba(248, 113, 113, 0.1);
+    color: #fca5a5;
+}
+
+.profile-action-btn.danger:hover:not(:disabled) {
+    background: rgba(248, 113, 113, 0.2);
+    border-color: rgba(248, 113, 113, 0.55);
+}
+
+/* ── Post cards inside profile panel ── */
+.profile-posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.profile-post-card {
+    padding: 14px 16px;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.55);
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.profile-post-card:hover {
+    border-color: rgba(56, 189, 248, 0.25);
+    background: rgba(30, 41, 59, 0.7);
+}
+
+.profile-post-subject {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin: 0 0 6px;
+    line-height: 1.4;
+}
+
+.profile-post-body {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin: 0 0 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.profile-post-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.profile-post-time {
+    font-size: 11px;
+    color: #475569;
+    letter-spacing: 0.02em;
+}
+
+.profile-post-stats {
+    display: flex;
+    gap: 12px;
+}
+
+.profile-post-stat {
+    font-size: 12px;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.profile-posts-empty {
+    font-size: 13px;
+    color: #475569;
+    text-align: center;
+    padding: 24px 0;
+}
+
+.profile-posts-loading {
+    font-size: 13px;
+    color: #475569;
+    padding: 12px 0;
+}
+
+.profile-posts-error {
+    font-size: 13px;
+    color: #f87171;
+    padding: 12px 0;
+}
 /* ── Responsive ── */
 @media (max-width: 768px) {
     .profile-container {
@@ -226,4 +360,3 @@
         justify-content: center;
     }
 }
- 

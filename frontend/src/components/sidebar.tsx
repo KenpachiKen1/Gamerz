@@ -1,10 +1,6 @@
 import React from "react";
 import {
-  UserOutlined,
   ProfileOutlined,
-  SettingOutlined,
-  SmileOutlined,
-  CommentOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -33,11 +29,6 @@ const Sidebar: React.FC = () => {
     },
     {
       key: "2",
-      icon: <CommentOutlined />,
-      label: "Communities",
-    },
-    {
-      key: "3",
       icon: <LogoutOutlined />,
       label: "Logout",
       onClick: handleLogOut,

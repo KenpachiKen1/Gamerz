@@ -7,15 +7,18 @@ import { AuthProvider } from "./context/AuthContext";
 import { UserProvider } from "./context/ProfileContext";
 import { FriendsProvider } from "./context/FriendsContext";
 import { CommunityProvider } from "./context/CommunityContext";
+import { GameProvider } from "./context/GameContext";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <UserProvider>
           <FriendsProvider>
-            <CommunityProvider>
-              <App />
-            </CommunityProvider>
+            <GameProvider>
+              <CommunityProvider>
+                <App />
+              </CommunityProvider>
+            </GameProvider>
           </FriendsProvider>
         </UserProvider>
       </AuthProvider>

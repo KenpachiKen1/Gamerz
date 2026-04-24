@@ -1,14 +1,12 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, Card, Layout } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
-import Wishlist from "../components/Wishlist";
-import Friends from "../components/Friends";
-import "../styles/profile.css";
-import Sidebar from "../components/sidebar";
 import { useFriends } from "../context/FriendsContext";
+import Sidebar from "../components/sidebar";
+import "../styles/profile.css";
 
 const { Content } = Layout;
 
@@ -29,11 +27,8 @@ type FavoriteGameType = {
 
 type ProfileType = {
   username: string;
-  wishlist_name: string | null;
-  profile_photo?: string | null;
   profile_picture?: string | null;
   main_platform?: string | null;
-  avg_hours_week?: number | null;
   hours?: number | null;
   favorite_game?: FavoriteGameType | null;
   friendship_status?: FriendshipStatus;
@@ -54,11 +49,17 @@ type ProfilePost = {
   comment_count?: number;
 };
 
-const Profile = () => {
-  const [collapsed] = useState<boolean>(false);
+export default function UserProfile() {
+  const [collapsed] = useState(false);
   const navigate = useNavigate();
+  const { username } = useParams<{ username: string }>();
   const { getToken } = useAuth();
-  const { username } = useParams<{ username?: string }>();
+  const {
+    add_friend,
+    remove_friend,
+    accept_friend_request,
+    decline_friend_request,
+  } = useFriends();
 
   const [viewedProfile, setViewedProfile] = useState<ProfileType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,54 +68,46 @@ const Profile = () => {
   const [postsLoading, setPostsLoading] = useState(true);
   const [postsError, setPostsError] = useState<string | null>(null);
 
-  const {
-    add_friend,
-    remove_friend,
-    accept_friend_request,
-    decline_friend_request,
-  } = useFriends();
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!username) return;
 
-  const isOwnProfile = !username;
+      setLoading(true);
 
-  const loadProfile = useCallback(async () => {
-    setLoading(true);
+      try {
+        const token = await getToken();
 
-    try {
-      const token = await getToken();
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/users/profile/${username}/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      const url = username
-        ? `http://127.0.0.1:8000/api/users/profile/${username}/`
-        : `http://127.0.0.1:8000/api/users/profile/`;
+        const data = await response.json();
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        if (!response.ok) {
+          throw new Error(data.error || "Could not load profile");
+        }
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Could not load profile");
+        setViewedProfile(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setViewedProfile(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    loadProfile();
   }, [username, getToken]);
 
   useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
-
-  useEffect(() => {
-    if (!viewedProfile?.username) return;
-
     const loadPosts = async () => {
+      if (!username) return;
+
       setPostsLoading(true);
       setPostsError(null);
 
@@ -122,7 +115,7 @@ const Profile = () => {
         const token = await getToken();
 
         const response = await fetch(
-          `http://127.0.0.1:8000/api/users/${viewedProfile.username}/posts/`,
+          `http://127.0.0.1:8000/api/users/${username}/posts/`,
           {
             method: "GET",
             headers: {
@@ -148,7 +141,7 @@ const Profile = () => {
     };
 
     loadPosts();
-  }, [viewedProfile?.username, getToken]);
+  }, [username, getToken]);
 
   if (loading || !viewedProfile) {
     return <p>Loading profile...</p>;
@@ -166,8 +159,6 @@ const Profile = () => {
   };
 
   const renderFriendshipAction = () => {
-    if (isOwnProfile || !viewedProfile) return null;
-
     const status = viewedProfile.friendship_status?.status;
     const isSender = viewedProfile.friendship_status?.is_sender;
 
@@ -254,9 +245,9 @@ const Profile = () => {
               <div className="profile-action-row">
                 {renderFriendshipAction()}
               </div>
+
               <h2>{viewedProfile.username}</h2>
               <p>Main Platform: {viewedProfile.main_platform || "Not set"}</p>
-              <p>Bio: Lorem ipsum</p>
 
               <div className="stats">
                 <div className="stat-item">
@@ -286,20 +277,6 @@ const Profile = () => {
           </Card>
 
           <div className="profile-panels">
-            {isOwnProfile && (
-              <>
-                <Card className="panel">
-                  <h2 className="panel-title">Wishlist</h2>
-                  <Wishlist Profile={viewedProfile} onChanged={loadProfile} />
-                </Card>
-
-                <Card className="panel">
-                  <h2 className="panel-title">Friends</h2>
-                  <Friends Profile={viewedProfile} />
-                </Card>
-              </>
-            )}
-
             <Card className="panel">
               <h2 className="panel-title">Posts</h2>
 
@@ -347,6 +324,4 @@ const Profile = () => {
       </Layout>
     </Layout>
   );
-};
-
-export default Profile;
+}

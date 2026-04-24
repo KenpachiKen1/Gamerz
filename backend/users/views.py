@@ -156,6 +156,43 @@ class UserViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+    @action(detail=False, methods=["GET"], url_path=r"profile/(?P<username>[^/.]+)")
+    def public_profile(self, request, username=None):
+            current_user = request.user
+            target_user = get_object_or_404(
+                User.objects.select_related("favorite_game"),
+                username=username
+            )
+
+            friendship = Friendship.objects.filter(
+                Q(sender=current_user, receiver=target_user) |
+                Q(sender=target_user, receiver=current_user)
+            ).first()
+
+            friendship_map = {}
+
+            if friendship:
+                if friendship.sender_id == current_user.id:
+                    friendship_map[target_user.id] = {
+                        "status": friendship.status,
+                        "is_sender": True,
+                    }
+                else:
+                    friendship_map[target_user.id] = {
+                        "status": friendship.status,
+                        "is_sender": False,
+                    }
+
+            serializer = ProfileReadSerializer(
+                target_user,
+                context={
+                    "request": request,
+                    "friendship_map": friendship_map,
+                },
+            )
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+                
 
 class WishlistViewSet(viewsets.ModelViewSet):
     queryset = UserWishlist.objects.prefetch_related("games").select_related("user").all()
@@ -549,7 +586,7 @@ def get_users_friend_list(user: User, request):
 
     return serializer.data
         
-    
+
 
 
         

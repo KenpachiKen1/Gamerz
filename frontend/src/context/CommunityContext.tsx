@@ -13,11 +13,22 @@ type User = {
   profile_picture?: string | null;
 };
 
+type CommunityMember = {
+  id: number;
+  username: string;
+  profile_picture?: string | null;
+};
+
 type Community = {
   id: number;
   title: string;
   member_count?: number;
   joined_by_user?: boolean;
+  members?: CommunityMember[];
+  game?: {
+    id: number;
+    title: string;
+  };
 };
 
 type CommunityPost = {
@@ -48,6 +59,8 @@ type CommunityContextType = {
   likePost: (postId: number) => Promise<void>;
   dislikePost: (postId: number) => Promise<void>;
   deletePost: (postId: number) => Promise<boolean>;
+  joinCommunity: (communityId: number) => Promise<boolean>;
+  leaveCommunity: (communityId: number) => Promise<boolean>;
   clearCommunityState: () => void;
 };
 
@@ -230,6 +243,90 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
     [getToken]
   );
 
+  const joinCommunity = useCallback(
+    async (communityId: number) => {
+      setError(null);
+
+      try {
+        const token = await getToken();
+
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/communities/${communityId}/join/`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to join community");
+        }
+
+        setCommunity((prev) =>
+          prev
+            ? {
+                ...prev,
+                joined_by_user: true,
+                member_count: (prev.member_count ?? 0) + 1,
+              }
+            : prev
+        );
+
+        return true;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+        return false;
+      }
+    },
+    [getToken]
+  );
+
+  const leaveCommunity = useCallback(
+    async (communityId: number) => {
+      setError(null);
+
+      try {
+        const token = await getToken();
+
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/communities/${communityId}/leave/`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to leave community");
+        }
+
+        setCommunity((prev) =>
+          prev
+            ? {
+                ...prev,
+                joined_by_user: false,
+                member_count: Math.max((prev.member_count ?? 1) - 1, 0),
+              }
+            : prev
+        );
+
+        return true;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+        return false;
+      }
+    },
+    [getToken]
+  );
+
   const clearCommunityState = () => {
     setCommunity(null);
     setPosts([]);
@@ -248,6 +345,8 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
         likePost,
         dislikePost,
         deletePost,
+        joinCommunity,
+        leaveCommunity,
         clearCommunityState,
       }}
     >
