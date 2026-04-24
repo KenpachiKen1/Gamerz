@@ -34,7 +34,9 @@ SECRET_KEY = 'django-insecure-4uw))ayr005b^mxac5!&9^%5g#dq8g^(y329f(ijlw!4g82=*d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net'
+]
 AUTH_USER_MODEL = 'users.User'
 
 CORS_ALLOWED_ORIGINS = [
