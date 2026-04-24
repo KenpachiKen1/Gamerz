@@ -31,7 +31,7 @@ import jason from "../Profile_Pictures/jason.png";
 import witch from "../Profile_Pictures/witch.png";
 import cupid from "../Profile_Pictures/cupid.png";
 import eskimo from "../Profile_Pictures/eskimo.png";
-import techno from "../Profile_Pictures/techno.png";
+import techno from "../Profile_Pictures/Techno.png";
 import superhero from "../Profile_Pictures/superhero.png";
 import dragon from "../Profile_Pictures/dragon.png";
 import boy from "../Profile_Pictures/boy.png";
