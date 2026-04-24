@@ -3,7 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-
+from django.db.models import Q
+from users.models import Friendship, User
 from .models import Community, CommunityPost, CommunityPostComment
 from .serializers import (
     CommunityReadSerializer,
@@ -12,6 +13,7 @@ from .serializers import (
     CommunityPostCommentReadSerializer,
     CommunityPostCommentWriteSerializer,
 )
+from rest_framework.views import APIView
 
 
 class CommunityViewSet(viewsets.ModelViewSet):
@@ -57,19 +59,49 @@ class CommunityViewSet(viewsets.ModelViewSet):
             context={"request": request},
         )
 
+        community_serializer = CommunityReadSerializer(
+            community,
+            context={"request": request},
+        )
+
+        community_data = community_serializer.data
+        community_data["joined_by_user"] = community.members.filter(
+            id=request.user.id
+        ).exists()
+
         return Response(
             {
-                "community": {
-                    "id": community.id,
-                    "title": community.title,
-                    "member_count": community.members.count(),
-                    "joined_by_user": community.members.filter(id=request.user.id).exists(),
-                },
+                "community": community_data,
                 "count": posts.count(),
                 "results": serializer.data,
             },
             status=status.HTTP_200_OK,
         )
+    
+    @action(detail=False, methods=["GET"])
+    def trending(self, request):
+        communities = (
+            Community.objects.all()
+            .prefetch_related("members")
+            .select_related("game")
+        )
+
+        serializer = CommunityReadSerializer(
+            communities,
+            many=True,
+            context={"request": request},
+        )
+
+        data = serializer.data
+
+        for item in data:
+            item["joined_by_user"] = any(
+                member["id"] == request.user.id for member in item.get("members", [])
+            )
+
+        data.sort(key=lambda c: c.get("member_count", 0), reverse=True)
+
+        return Response(data[:6], status=status.HTTP_200_OK)
     @action(detail=True, methods=["POST"])
     def create_post(self, request, pk=None):
         user = request.user
@@ -327,3 +359,63 @@ class CommunityPostCommentViewSet(viewsets.ModelViewSet):
             {"message": "Comment deleted successfully"},
             status=status.HTTP_200_OK,
         )
+    
+class ActivityFeedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        sent_friend_ids = Friendship.objects.filter(
+            sender=user,
+            status=Friendship.ACCEPTED
+        ).values_list("receiver_id", flat=True)
+
+        received_friend_ids = Friendship.objects.filter(
+            receiver=user,
+            status=Friendship.ACCEPTED
+        ).values_list("sender_id", flat=True)
+
+        friend_ids = list(sent_friend_ids) + list(received_friend_ids)
+
+        posts = (
+            CommunityPost.objects.filter(
+                Q(community__members=user) | Q(poster_id__in=friend_ids)
+            )
+            .select_related("poster", "community")
+            .prefetch_related("likes", "dislikes", "replies")
+            .distinct()
+            .order_by("-creation")
+        )
+
+        serializer = CommunityPostReadSerializer(
+            posts,
+            many=True,
+            context={"request": request},
+        )
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class UserPostsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, username):
+        target_user = get_object_or_404(User, username=username)
+
+        posts = (
+            CommunityPost.objects.filter(
+                poster=target_user,
+                community__members=request.user,
+            )
+            .select_related("poster", "community")
+            .prefetch_related("likes", "dislikes", "replies")
+            .order_by("-creation")
+        )
+
+        serializer = CommunityPostReadSerializer(
+            posts,
+            many=True,
+            context={"request": request},
+        )
+
+        return Response(serializer.data, status=200)

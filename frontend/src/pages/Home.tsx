@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import GameCard from "../components/GameCard";
 import ClipCard from "../components/ClipCard";
-import CommunityCard from "../components/CommunityCard";
-
 import "../styles/home.css";
 import { useAuth } from "../context/AuthContext";
 import { useAccount } from "../context/ProfileContext";
+
 import { Avatar, Modal, Input } from "antd";
 
 const { TextArea } = Input;
@@ -16,10 +14,28 @@ type Community = {
   id: number;
   title: string;
   member_count?: number;
+  joined_by_user?: boolean;
+  image?: string | null;
   game?: {
     id: number;
     title: string;
+    game_image: string;
   };
+};
+
+type FeedPost = {
+  id: number;
+  subject: string;
+  body: string;
+  creation: string;
+  poster: {
+    id: number;
+    username: string;
+    profile_picture?: string | null;
+  };
+  like_count?: number;
+  dislike_count?: number;
+  comment_count?: number;
 };
 
 export default function Home() {
@@ -30,15 +46,25 @@ export default function Home() {
   const [postModal, setPostModal] = useState(false);
   const [postContent, setPostContent] = useState("");
 
-  const { isAuthenticated, logout, getToken } = useAuth();
-  const { profile, getProfile } = useAccount();
   const [myCommunities, setMyCommunities] = useState<Community[]>([]);
+  const [trendingCommunities, setTrendingCommunities] = useState<Community[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [feedPosts, setFeedPosts] = useState<FeedPost[]>([]);
+  const [feedLoading, setFeedLoading] = useState(true);
+  const [feedError, setFeedError] = useState<string | null>(null);
+
+  const { isAuthenticated, logout, getToken } = useAuth();
+  const { profile, getProfile } = useAccount();
+
   useEffect(() => {
-    getProfile();
-  }, [getProfile]);
+    if (!profile) {
+      getProfile();
+    }
+  }, [profile, getProfile]);
 
   useEffect(() => {
     const fetchMyCommunities = async () => {
@@ -69,6 +95,71 @@ export default function Home() {
     fetchMyCommunities();
   }, [getToken]);
 
+  useEffect(() => {
+    const fetchFeed = async () => {
+      try {
+        setFeedLoading(true);
+        setFeedError(null);
+
+        const token = await getToken();
+
+        const response = await fetch("http://127.0.0.1:8000/api/feed/", {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to load feed");
+        }
+
+        setFeedPosts(data);
+      } catch (err) {
+        setFeedError(
+          err instanceof Error ? err.message : "Something went wrong"
+        );
+      } finally {
+        setFeedLoading(false);
+      }
+    };
+
+    fetchFeed();
+  }, [getToken]);
+
+  useEffect(() => {
+    const fetchTrendingCommunities = async () => {
+      try {
+        const token = await getToken();
+
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/communities/trending/",
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to load trending communities");
+        }
+
+        setTrendingCommunities(data);
+        console.log(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchTrendingCommunities();
+  }, [getToken]);
+
   const handleLogout = async () => {
     await logout();
   };
@@ -82,17 +173,12 @@ export default function Home() {
     setPostModal(false);
   };
 
-  const posts = [
-    {
-      id: 1,
-      user: "virgil25",
-      content: "Check this clip!",
-      videoUrl: "/videos/clip1.mp4",
-    },
-    { id: 2, user: "jalen16", content: "Looking for a squad" },
-    { id: 3, user: "kenneth88", content: "yo there's a new update!" },
-    { id: 4, user: "bryson09", content: "Anyone recommend any new games?" },
-  ];
+  const handleSearch = (e: any) => {
+    e.preventDefault();
+    if (!search.trim()) return;
+
+    navigate(`/search?query=${encodeURIComponent(search.trim())}`);
+  };
 
   const clips = [
     {
@@ -143,17 +229,27 @@ export default function Home() {
     if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
   };
 
+  const openCommunity = (community: Community) => {
+    navigate(
+      `/community/${community.id}/${community.title
+        .toLowerCase()
+        .replace(/\s+/g, "-")}`
+    );
+  };
+
   return (
     <div className="home-container">
       <nav className="navbar">
         <div className="nav-left">
           <h2 className="logo">Game Haven</h2>
-          <input
-            className="search"
-            placeholder="Search games, players..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <form onSubmit={handleSearch}>
+            <input
+              className="search"
+              placeholder="Search games, players..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </form>
         </div>
 
         <div className="nav-center">
@@ -186,7 +282,6 @@ export default function Home() {
 
       <section className="hero">
         <h2>Find Your Gaming Community</h2>
-        <p>Join discussions, share clips, and meet other players.</p>
       </section>
 
       <Modal
@@ -222,14 +317,11 @@ export default function Home() {
           <div className="sidebar-card">
             <div className="sidebar-header">
               <h2>Your Communities</h2>
-              <p>
-                Pick up where you left off and jump back into the conversation.
-              </p>
+              
             </div>
 
             <div className="community-list">
               {loading && <p>Loading communities...</p>}
-
               {error && <p>{error}</p>}
 
               {!loading && !error && myCommunities.length === 0 && (
@@ -242,13 +334,7 @@ export default function Home() {
                   <button
                     key={community.id}
                     className="community-item"
-                    onClick={() =>
-                      navigate(
-                        `/community/${community.id}/${community.title
-                          .toLowerCase()
-                          .replace(/\s+/g, "-")}`
-                      )
-                    }
+                    onClick={() => openCommunity(community)}
                   >
                     <span>{community.title}</span>
                     <span className="community-action">Open</span>
@@ -262,37 +348,38 @@ export default function Home() {
           <div className="section-card">
             <div className="section-header">
               <h2>Activity Feed</h2>
-              <button
-                className="new-post-btn"
-                onClick={() => setPostModal(true)}
-              >
-                + New Post
-              </button>
             </div>
 
             <div className="feed">
-              {posts.map((post) => (
-                <div key={post.id} className="post">
-                  <h4
-                    className="username"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/profile/${post.user}`);
-                    }}
-                  >
-                    @{post.user}
-                  </h4>
-                  <p>{post.content}</p>
-                  {post.videoUrl && (
-                    <video
-                      className="post-video"
-                      src={post.videoUrl}
-                      controls
-                      muted
-                    />
-                  )}
-                </div>
-              ))}
+              {feedLoading && <p>Loading feed...</p>}
+              {feedError && <p>{feedError}</p>}
+              {!feedLoading && !feedError && feedPosts.length === 0 && (
+                <p>No activity yet.</p>
+              )}
+
+              {!feedLoading &&
+                !feedError &&
+                feedPosts.map((post) => (
+                  <div key={post.id} className="post">
+                    <h4
+                      className="username"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/profile/${post.poster.username}`);
+                      }}
+                    >
+                      @{post.poster.username}
+                    </h4>
+
+                    {post.subject && (
+                      <p>
+                        <strong>{post.subject}</strong>
+                      </p>
+                    )}
+                    <p>{post.body}</p>
+                    <small>{new Date(post.creation).toLocaleString()}</small>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
@@ -319,20 +406,57 @@ export default function Home() {
           </div>
 
           <div className="section-card">
-            <h2>Trending Communities</h2>
-            <div className="card-row">
-              <CommunityCard title="Community 1" />
-              <CommunityCard title="Community 2" />
-              <CommunityCard title="Community 3" />
+            <div className="section-header">
+              <h2>Top Communities</h2>
             </div>
-          </div>
+            <div className="trending-scroll">
+              {trendingCommunities.map((community) => (
+                <div
+                  key={community.id}
+                  className="trending-card"
+                  onClick={() => openCommunity(community)}
+                >
+                  <div className="trending-card-image">
+                    {community.game?.game_image ? (
+                      <img
+                        src={
+                          community.game.game_image.startsWith("//")
+                            ? `https:${community.game.game_image}`
+                            : community.game.game_image
+                        }
+                        alt={community.title}
+                      />
+                    ) : (
+                      <div className="trending-card-placeholder">
+                        {community.title.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
 
-          <div className="section-card">
-            <h2>Popular Games</h2>
-            <div className="card-row">
-              <GameCard title="Game 1" />
-              <GameCard title="Game 2" />
-              <GameCard title="Game 3" />
+                  <div className="trending-card-body">
+                    <p className="trending-card-title">{community.title}</p>
+                    <p className="trending-card-members">
+                      {community.member_count ?? 0} followers
+                    </p>
+
+                    <div className="trending-card-footer">
+                      <button
+                        className={
+                          community.joined_by_user
+                            ? "community-status-btn joined"
+                            : "community-status-btn join"
+                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openCommunity(community);
+                        }}
+                      >
+                        {community.joined_by_user ? "Joined" : "Enter"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

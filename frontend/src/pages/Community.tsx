@@ -6,7 +6,7 @@ import { useCommunity } from "../context/CommunityContext";
 import { useAuth } from "../context/AuthContext";
 
 type FeedTab = "feed" | "clips" | "chat";
-type PostFilter = "all" | "discussion" | "clip" | "news";
+type PostFilter = "posts";
 
 type ChatMessage = {
   id: number;
@@ -14,6 +14,24 @@ type ChatMessage = {
   message: string;
   created: string;
 };
+
+type CommunityMember = {
+  id: number;
+  username: string;
+  profile_picture?: string | null;
+};
+
+type Community = {
+  id: number;
+  title: string;
+  member_count?: number;
+  joined_by_user?: boolean;
+  members?: CommunityMember[];
+  game?: {
+    id: number;
+    title: string;
+  };
+}; 
 
 const MOCK_CLIPS = [
   {
@@ -54,12 +72,6 @@ const MOCK_CLIPS = [
   },
 ];
 
-const TEMP_ONLINE_MEMBERS = [
-  { name: "virgil25", status: "online" },
-  { name: "kenneth88", status: "online" },
-  { name: "mia_plays", status: "online" },
-];
-
 const initials = (name: string) => name.slice(0, 2).toUpperCase();
 
 export default function Community() {
@@ -73,11 +85,15 @@ export default function Community() {
     likePost,
     dislikePost,
     deletePost,
+    joinCommunity,
+    leaveCommunity,
   } = useCommunity();
 
   const { getToken } = useAuth();
   const navigate = useNavigate();
   const { name, id } = useParams<{ name?: string; id?: string }>();
+
+  
 
   const communityName =
     typeof community?.title === "string"
@@ -86,8 +102,12 @@ export default function Community() {
       ? name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
       : "Community";
 
+  const members: CommunityMember[] = Array.isArray(community?.members)
+    ? community.members
+    : [];
+
   const [activeTab, setActiveTab] = useState<FeedTab>("feed");
-  const [filter, setFilter] = useState<PostFilter>("all");
+  const [filter, setFilter] = useState<PostFilter>("posts");
   const [postContent, setPostContent] = useState("");
   const [postSubject, setPostSubject] = useState("");
   const [postType, setPostType] = useState<"discussion" | "clip" | "news">(
@@ -192,6 +212,19 @@ export default function Community() {
     await deletePost(postId);
   };
 
+  
+  const handleCommunityToggle = async () => {
+    if (!id) return;
+
+    if (isJoined) {
+      await leaveCommunity(Number(id));
+    } else {
+      await joinCommunity(Number(id));
+    }
+
+    await fetchCommunityPosts(Number(id));
+  };
+
   const handleSendChat = () => {
     if (!chatInput.trim()) return;
 
@@ -208,14 +241,7 @@ export default function Community() {
     setChatInput("");
   };
 
-  const filteredPosts =
-    filter === "all"
-      ? posts
-      : posts.filter((post: any) => {
-          const normalizedSubject = post.subject?.toLowerCase() || "";
-          return normalizedSubject.includes(filter);
-        });
-
+  const filteredPosts = posts;
   const isJoined = community?.joined_by_user === true;
 
   const renderMessages = () => (
@@ -255,13 +281,48 @@ export default function Community() {
     </>
   );
 
+  const renderMembers = () => (
+    <div className="member-list">
+      {members.length === 0 ? (
+        <p style={{ color: "#94a3b8", margin: 0 }}>No members found.</p>
+      ) : (
+        members.map((member) => (
+          <button
+            key={member.id}
+            type="button"
+            className="member-item"
+            onClick={() => navigate(`/profile/${member.username}`)}
+            style={{
+              width: "100%",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              textAlign: "left",
+            }}
+          >
+            <Avatar
+              src={member.profile_picture}
+              size={28}
+              style={{ marginRight: 10 }}
+            />
+            <span>@{member.username}</span>
+          </button>
+        ))
+      )}
+    </div>
+  );
+
   return (
     <div className="community-container">
       <div className="community-banner">
         <div className="banner-content">
-          
-
-          <div className="community-icon" style={{cursor: 'pointer'}} onClick={() => {navigate("/home")}}>🏠</div>
+          <div
+            className="community-icon"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/home")}
+          >
+            🏠
+          </div>
 
           <div className="banner-meta">
             <h1>{communityName}</h1>
@@ -272,13 +333,11 @@ export default function Community() {
                 <span>
                   {typeof community?.member_count === "number"
                     ? community.member_count
-                    : "--"}
-                </span>
-                {} members
+                    : members.length}
+                </span>{" "}
+                members
               </span>
-              <span className="banner-stat">
-                <span>{TEMP_ONLINE_MEMBERS.length}</span> online now
-              </span>
+
               <span className="banner-stat">
                 <span>{posts.length}</span> posts
               </span>
@@ -287,11 +346,13 @@ export default function Community() {
 
           <div className="banner-actions">
             {isJoined ? (
-              <button className="btn-joined" disabled>
-                ✓ Joined
+              <button className="btn-following" onClick={handleCommunityToggle}>
+                Joined
               </button>
             ) : (
-              <button className="btn-join">Join Community</button>
+              <button className="btn-unfollow" onClick={handleCommunityToggle}>
+                Join Community
+              </button>
             )}
           </div>
         </div>
@@ -324,9 +385,9 @@ export default function Community() {
                   margin: 0,
                 }}
               >
-                The official Game Haven community for {communityName}. Share
-                clips, find squads, discuss strategies, and stay up-to-date on
-                the latest news.
+                The official hub for the {communityName}. Share clips, find
+                squads, discuss strategies, and stay up-to-date on the latest
+                news.
               </p>
             </div>
 
@@ -335,26 +396,14 @@ export default function Community() {
               <ul className="rules-list">
                 <li>Be respectful to all members</li>
                 <li>No spam or self-promotion</li>
-                <li>Tag your posts correctly</li>
                 <li>No spoilers without a warning</li>
-                <li>Keep clips under 5 minutes</li>
+                <li>Keep clips under 1 minute</li>
               </ul>
             </div>
 
             <div className="comm-card">
-              <h3>Online Now</h3>
-              <div className="member-list">
-                {TEMP_ONLINE_MEMBERS.map((member) => (
-                  <div key={member.name} className="member-item">
-                    <span
-                      className={`member-dot ${
-                        member.status === "away" ? "away" : ""
-                      }`}
-                    />
-                    <span>{member.name}</span>
-                  </div>
-                ))}
-              </div>
+              <h3>Members</h3>
+              {renderMembers()}
             </div>
           </aside>
 
@@ -413,15 +462,12 @@ export default function Community() {
             </div>
 
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {(["all", "discussion", "clip", "news"] as const).map((f) => (
-                <button
-                  key={f}
-                  className={`filter-btn ${filter === f ? "active" : ""}`}
-                  onClick={() => setFilter(f)}
-                >
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
-                </button>
-              ))}
+              <button
+                className={`filter-btn ${filter === "posts" ? "active" : ""}`}
+                onClick={() => setFilter("posts")}
+              >
+                Posts
+              </button>
             </div>
 
             {loading && <div className="comm-card">Loading posts...</div>}
@@ -493,9 +539,6 @@ export default function Community() {
             <div className="chat-card">
               <div className="chat-header">
                 <h3>Live Chat</h3>
-                <span className="chat-online">
-                  {TEMP_ONLINE_MEMBERS.length} online
-                </span>
               </div>
 
               <div className="chat-messages">{renderMessages()}</div>
@@ -562,9 +605,6 @@ export default function Community() {
             <div className="chat-card" style={{ height: 560 }}>
               <div className="chat-header">
                 <h3>Community Chat</h3>
-                <span className="chat-online">
-                  {TEMP_ONLINE_MEMBERS.length} online
-                </span>
               </div>
 
               <div className="chat-messages">{renderMessages()}</div>
@@ -586,19 +626,8 @@ export default function Community() {
 
           <aside className="community-right" style={{ position: "static" }}>
             <div className="comm-card">
-              <h3>Online Now</h3>
-              <div className="member-list">
-                {TEMP_ONLINE_MEMBERS.map((member) => (
-                  <div key={member.name} className="member-item">
-                    <span
-                      className={`member-dot ${
-                        member.status === "away" ? "away" : ""
-                      }`}
-                    />
-                    <span>{member.name}</span>
-                  </div>
-                ))}
-              </div>
+              <h3>Members</h3>
+              {renderMembers()}
             </div>
           </aside>
         </div>

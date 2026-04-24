@@ -10,56 +10,156 @@ load_dotenv()
 from rest_framework.permissions import IsAuthenticated
 from requests import post
 import datetime
-from communities.models import *
-# Create your views here.
+
 class GameViewSet(viewsets.ModelViewSet):
-    
     queryset = Game.objects.all()
-    serializer_class = Game
+    serializer_class = GameReadSerializer
     permission_classes = [IsAuthenticated]
 
-    global CID
-    
-    CID = os.getenv("CLIENT_ID") #can be global, client id will always be the same
-  
-   
+    CID = os.getenv("CLIENT_ID")
 
-    @action(detail=False, methods=['POST'])
+    @action(detail=False, methods=["POST"])
     def game_search(self, request):
-
         base_url = "https://api.igdb.com/v4/games"
-       #will maybe add more fields depending on what it is necessary
         token = get_token()
+
         headers = {
-        "Client-ID": CID,
-        "Authorization": f"Bearer {token}"
-    }
+            "Client-ID": self.CID,
+            "Authorization": f"Bearer {token}"
+        }
+
         game = request.data.get("game")
 
-        #added where clause for hopefully more exact look ups
         body = f"""
-        search "{game}"; 
+        search "{game}";
         fields id, name, first_release_date, summary, first_release_date, genres.name, websites.url, cover.url, platforms.name, artworks.url;
         limit 30;
-        """ #using college football just for testing purposes
+        """
+
         response = post(base_url, headers=headers, data=body)
         data = response.json()
 
-        #datetime.datetime.fromtimestamp(details.get("first_release_date"))
         filtered_results = [
-        {
-            "id": details["id"],
-            "name": details["name"],
-            "cover": details.get("cover").get("url") if details.get("cover") else None, #returns a dictionary with both the ID and the url, I just want the url
-            "release_date" : datetime.datetime.fromtimestamp(details["first_release_date"]).date().isoformat() if details.get("first_release_date") else None,  #Converts the date but if there is nothing there it will just be null
-            "summary" : details.get("summary"), #some search results don't have summaries .get() is more loose in the sense that if the key isn't there it just wont return
-            "platforms" : [platforms["name"] for platforms in details.get("platforms", [])]
-        } for details in data]
+            {
+                "id": details["id"],
+                "name": details["name"],
+                "cover": details.get("cover").get("url") if details.get("cover") else None,
+                "release_date": datetime.datetime.fromtimestamp(
+                    details["first_release_date"]
+                ).date().isoformat() if details.get("first_release_date") else None,
+                "summary": details.get("summary"),
+                "platforms": [platform["name"] for platform in details.get("platforms", [])]
+            }
+            for details in data
+        ]
 
         return Response(filtered_results, status=status.HTTP_200_OK)
-    
 
-    @action(detail=False, methods=['PATCH'])
+    @action(detail=False, methods=["POST"])
+    def follow_game(self, request):
+        user = request.user
+        game_name = request.data.get("name")
+
+        if not game_name:
+            return Response(
+                {"error": "No game name provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            game = Game.objects.filter(title=game_name).first()
+
+            if not game:
+                game = add_game_to_db(game_name)
+
+            user.followed_games.add(game)
+
+            community = getattr(game, "community", None)
+            if community:
+                community.members.add(user)
+
+            return Response(
+                {
+                    "message": f"Now following {game.title}",
+                    "game": game.title,
+                    "community_joined": community.title if community else None,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    @action(detail=False, methods=["DELETE"])
+    def unfollow_game(self, request):
+        user = request.user
+        game_name = request.data.get("name")
+
+        if not game_name:
+            return Response(
+                {"error": "No game name provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            game = Game.objects.get(title=game_name)
+
+            if not user.followed_games.filter(id=game.id).exists():
+                return Response(
+                    {"error": "You are not following this game"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            user.followed_games.remove(game)
+
+            community = getattr(game, "community", None)
+
+            # only leave community if it is not also their favorite game
+            if community and user.favorite_game_id != game.id:
+                community.members.remove(user)
+
+            return Response(
+                {
+                    "message": f"Unfollowed {game.title}",
+                    "game": game.title,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except Game.DoesNotExist:
+            return Response(
+                {"error": "Game not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    @action(detail=False, methods=["GET"])
+    def show_followed_games(self, request):
+        user = request.user
+
+        try:
+            games = user.followed_games.all()
+            serializer = GameReadSerializer(games, many=True)
+
+            return Response(
+                {"followed_games": serializer.data},
+                status=status.HTTP_200_OK,
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    @action(detail=False, methods=["PATCH"])
     def set_fav_game(self, request):
         user = request.user
         game_name = request.data.get("name")
@@ -79,6 +179,9 @@ class GameViewSet(viewsets.ModelViewSet):
             user.favorite_game = game
             user.save()
 
+            # favorite game should also become followed
+            user.followed_games.add(game)
+
             community = getattr(game, "community", None)
             if community:
                 community.members.add(user)
@@ -87,6 +190,7 @@ class GameViewSet(viewsets.ModelViewSet):
                 {
                     "favorite_game": game.title,
                     "community_joined": community.title if community else None,
+                    "message": f"{game.title} set as favorite and followed",
                 },
                 status=status.HTTP_200_OK,
             )
@@ -96,20 +200,23 @@ class GameViewSet(viewsets.ModelViewSet):
                 {"Adding game error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    @action(detail=False, methods=['GET']) 
+
+    @action(detail=False, methods=["GET"])
     def get_fav_game(self, request):
         user = request.user
         game = user.favorite_game
 
         if game is None:
-            return Response({"Error" : "No favorite game set"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "No favorite game set"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
         serializer = GameReadSerializer(game, many=False)
+        return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
-        return Response({"Details" : serializer.data}, status=status.HTTP_200_OK) 
-
-
-    @action(detail=False)
-    def game_details(self, request): 
+    @action(detail=False, methods=["POST"])
+    def game_details(self, request):
         title = request.data.get("game")
 
         try:
@@ -118,9 +225,8 @@ class GameViewSet(viewsets.ModelViewSet):
             else:
                 game = add_game_to_db(title)
 
-            print(game)
             serializer = GameReadSerializer(game)
-            return Response({"Details": serializer.data}, status=status.HTTP_200_OK)
+            return Response({"details": serializer.data}, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response({"Error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

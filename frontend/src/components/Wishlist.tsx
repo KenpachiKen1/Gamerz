@@ -43,11 +43,11 @@ type ProfileType = {
 
 type WishlistProps = {
   Profile: ProfileType;
+  onChanged?: () => Promise<void> | void;
 };
 
-const Wishlist = ({ Profile }: WishlistProps) => {
+const Wishlist = ({ Profile, onChanged }: WishlistProps) => {
   const {
-    error,
     create_wishlist,
     add_to_wishlist,
     show_wishlist,
@@ -70,23 +70,29 @@ const Wishlist = ({ Profile }: WishlistProps) => {
     if (Profile) {
       show_wishlist();
     }
-  }, [Profile]);
+  }, [Profile, show_wishlist]);
 
   const handleCreate = async (name: string) => {
     await create_wishlist(name);
+    await show_wishlist();
+    await onChanged?.();
   };
 
   const handleAdd = async (game: string | null) => {
     if (!game) return;
     await add_to_wishlist(game);
+    await show_wishlist();
+    await onChanged?.();
   };
 
-  const handleShow = async ()  => {
+  const handleShow = async () => {
     await show_wishlist();
   };
 
   const handleRemove = async (game: string) => {
     await remove_from_wishlist(game);
+    await show_wishlist();
+    await onChanged?.();
   };
 
   const openGameModal = (game: Game) => {
@@ -102,6 +108,7 @@ const Wishlist = ({ Profile }: WishlistProps) => {
   const handleWishlistDeletion = async () => {
     setDeleteModal(false);
     await delete_wishlist();
+    await onChanged?.();
   };
 
   const displayName = selectedGame?.name ?? selectedGame?.title ?? "Unknown";
@@ -115,7 +122,9 @@ const Wishlist = ({ Profile }: WishlistProps) => {
             image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
             styles={{ image: { height: 60 } }}
             description={
-              <Typography.Text style={{color: 'white', fontWeight: 'bold'}}>You have no wishlists</Typography.Text>
+              <Typography.Text style={{ color: "white", fontWeight: "bold" }}>
+                You have no wishlists
+              </Typography.Text>
             }
           >
             <Button type="primary" onClick={() => setOpen(true)}>
@@ -161,8 +170,8 @@ const Wishlist = ({ Profile }: WishlistProps) => {
                       color: "white",
                       float: "right",
                     }}
-                    onClick={() => {
-                      handleCreate(wishname);
+                    onClick={async () => {
+                      await handleCreate(wishname);
                       setOpen(false);
                     }}
                   >
@@ -264,14 +273,14 @@ const Wishlist = ({ Profile }: WishlistProps) => {
                           fontSize: "20px",
                           cursor: "pointer",
                         }}
-                        onClick={() => {
+                        onClick={async () => {
                           closeGameModal();
                           showNotification(
                             "success",
                             displayName,
                             "removed game from wishlist"
                           );
-                          handleRemove(displayName);
+                          await handleRemove(displayName);
                         }}
                       />
                       <Button onClick={closeGameModal}>Close</Button>
@@ -361,10 +370,10 @@ const Wishlist = ({ Profile }: WishlistProps) => {
               destroyOnHidden
               footer={
                 <Button
-                  onClick={() => {
-                    handleAdd(games);
+                  onClick={async () => {
+                    await handleAdd(games);
                     setGameModal(false);
-                    handleShow();
+                    await handleShow();
                   }}
                   style={{ backgroundColor: "green", color: "white" }}
                 >
