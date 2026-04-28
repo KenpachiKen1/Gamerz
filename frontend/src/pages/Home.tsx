@@ -71,12 +71,15 @@ export default function Home() {
       try {
         const token = await getToken();
 
-        const response = await fetch("http://127.0.0.1:8000/api/communities/", {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        });
+        const response = await fetch(
+          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/",
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
 
         const data = await response.json();
 
@@ -103,12 +106,15 @@ export default function Home() {
 
         const token = await getToken();
 
-        const response = await fetch("http://127.0.0.1:8000/api/feed/", {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        });
+        const response = await fetch(
+          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/feed/",
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
 
         const data = await response.json();
 
@@ -135,7 +141,7 @@ export default function Home() {
         const token = await getToken();
 
         const response = await fetch(
-          "http://127.0.0.1:8000/api/communities/trending/",
+          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/trending/",
           {
             method: "GET",
             headers: {

@@ -49,12 +49,15 @@ export function UserProvider({ children }: UserProviderProps) {
     setError(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/users/profile/", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/profile/",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         setError("Could not load profile");
@@ -77,7 +80,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/wishlists/show_wishlist",
+        "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/show_wishlist",
         {
           method: "GET",
           headers: {
@@ -103,7 +106,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/wishlists/create_wishlist/",
+          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/create_wishlist/",
           {
             method: "POST",
             headers: {
@@ -141,7 +144,7 @@ export function UserProvider({ children }: UserProviderProps) {
         console.log("trying to add " + `${game}`);
 
         const response = await fetch(
-          "http://127.0.0.1:8000/api/wishlists/add_to_wishlist/",
+          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/add_to_wishlist/",
           {
             method: "PATCH",
             headers: {
@@ -178,7 +181,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/api/wishlists/delete_wishlist/",
+        "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/delete_wishlist/",
         {
           method: "DELETE",
           headers: {
@@ -205,7 +208,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/api/wishlists/remove_game_from_list/",
+          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/remove_game_from_list/",
           {
             method: "PATCH",
             headers: {

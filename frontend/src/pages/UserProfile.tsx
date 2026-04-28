@@ -78,7 +78,7 @@ export default function UserProfile() {
         const token = await getToken();
 
         const response = await fetch(
-          `http://127.0.0.1:8000/api/users/profile/${username}/`,
+          `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/profile/${username}/`,
           {
             method: "GET",
             headers: {
@@ -115,7 +115,7 @@ export default function UserProfile() {
         const token = await getToken();
 
         const response = await fetch(
-          `http://127.0.0.1:8000/api/users/${username}/posts/`,
+          `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/${username}/posts/`,
           {
             method: "GET",
             headers: {

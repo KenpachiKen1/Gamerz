@@ -78,17 +78,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
         
             console.log(token); //for backend testing
 
-            const response = await fetch('http://127.0.0.1:8000/api/users/signup/', {
-                method: 'POST',
+            const response = await fetch(
+              "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/signup/",
+              {
+                method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    email, password, username, first_name, last_name
-                })
-
-            })
+                  email,
+                  password,
+                  username,
+                  first_name,
+                  last_name,
+                }),
+              }
+            );
 
             const data = await response.json()
 
@@ -118,13 +124,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
             const token = await userCredentials.user.getIdToken();
 
 
-            const response = await fetch("http://127.0.0.1:8000/api/users/login/", {
+            const response = await fetch(
+              "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/login/",
+              {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
-            });
+              }
+            );
 
             const data = await response.json()
 

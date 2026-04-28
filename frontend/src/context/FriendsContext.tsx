@@ -66,7 +66,7 @@ export function FriendsProvider({ children }: FriendsProviderProps) {
       setError(null);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/friends/user_search/`,
+        `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/friends/user_search/`,
         {
           method: "POST",
           headers: {
@@ -101,7 +101,7 @@ export function FriendsProvider({ children }: FriendsProviderProps) {
       setError(null);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/friends/add_friend/`,
+        `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/friends/add_friend/`,
         {
           method: "POST",
           headers: {
@@ -133,7 +133,7 @@ export function FriendsProvider({ children }: FriendsProviderProps) {
       setError(null);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/friends/accept_friend_request/`,
+        `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/friends/accept_friend_request/`,
         {
           method: "PATCH",
           headers: {
@@ -166,7 +166,7 @@ export function FriendsProvider({ children }: FriendsProviderProps) {
       setError(null);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/friends/decline_friend_request/`,
+        `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/friends/decline_friend_request/`,
         {
           method: "DELETE",
           headers: {
@@ -198,7 +198,7 @@ export function FriendsProvider({ children }: FriendsProviderProps) {
       setError(null);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/friends/show_friend_list/`,
+        `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/friends/show_friend_list/`,
         {
           method: "GET",
           headers: {
@@ -230,7 +230,7 @@ export function FriendsProvider({ children }: FriendsProviderProps) {
       setError(null);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/friends/show_pending_friend_list/`,
+        `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/friends/show_pending_friend_list/`,
         {
           method: "GET",
           headers: {
@@ -265,7 +265,7 @@ export function FriendsProvider({ children }: FriendsProviderProps) {
       setError(null);
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/friends/remove_friend/`,
+        `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/friends/remove_friend/`,
         {
           method: "DELETE",
           headers: {

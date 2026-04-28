@@ -15,24 +15,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 from dotenv import load_dotenv
 load_dotenv()
 
-import os
+import os, json
 import firebase_admin
 from firebase_admin import credentials, auth
 
-firebase_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
-print(firebase_path)
+firebase_creds_str = os.getenv("FIREBASE_CREDENTIALS")
 
-if firebase_path and os.path.exists(firebase_path) and not firebase_admin._apps:
-    cred = credentials.Certificate(firebase_path)
+if firebase_creds_str and not firebase_admin._apps:
+    firebase_creds = json.loads(firebase_creds_str)
+
+    # FIX newline issue for private key
+    firebase_creds["private_key"] = firebase_creds["private_key"].replace("\\n", "\n")
+
+    cred = credentials.Certificate(firebase_creds)
     firebase_admin.initialize_app(cred)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4uw))ayr005b^mxac5!&9^%5g#dq8g^(y329f(ijlw!4g82=*d'
+SECRET_KEY = os.getenv('DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     'gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net'
