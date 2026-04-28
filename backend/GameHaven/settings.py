@@ -46,6 +46,8 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net",
+    "https://yellow-smoke-0fb6bf80f.7.azurestaticapps.net",
+
 ]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -57,6 +59,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5174",
+    "https://yellow-smoke-0fb6bf80f.7.azurestaticapps.net",
+
 ]
 
 
