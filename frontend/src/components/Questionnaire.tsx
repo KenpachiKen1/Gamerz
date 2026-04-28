@@ -93,7 +93,7 @@ const Questionnaire = () => {
       try {
         const token =  await getToken()
       const response = await fetch(
-        "http://127.0.0.1:8000/api/users/update_profile/",
+        "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/update_profile/",
         {
           method: "PATCH",
           headers: {
@@ -124,7 +124,7 @@ const Questionnaire = () => {
         const token = await getToken();
 
       const response = await fetch(
-        "http://127.0.0.1:8000/api/games/set_fav_game/",
+        "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/set_fav_game/",
         {
           method: "PATCH",
           headers: {

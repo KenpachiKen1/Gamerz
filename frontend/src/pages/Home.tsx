@@ -72,7 +72,7 @@ export default function Home() {
         const token = await getToken();
 
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/",
           {
             method: "GET",
             headers: {
@@ -107,7 +107,7 @@ export default function Home() {
         const token = await getToken();
 
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/feed/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/feed/",
           {
             method: "GET",
             headers: {
@@ -141,7 +141,7 @@ export default function Home() {
         const token = await getToken();
 
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/trending/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/trending/",
           {
             method: "GET",
             headers: {

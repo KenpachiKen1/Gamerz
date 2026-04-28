@@ -60,7 +60,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const token = await getToken();
 
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/game_search/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/game_search/",
           {
             method: "POST",
             headers: {
@@ -96,7 +96,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const token = await getToken();
 
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/follow_game/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/follow_game/",
           {
             method: "POST",
             headers: {
@@ -134,7 +134,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const token = await getToken();
 
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/unfollow_game/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/unfollow_game/",
           {
             method: "DELETE",
             headers: {
@@ -170,7 +170,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const token = await getToken();
 
       const response = await fetch(
-        "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/show_followed_games/",
+        "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/show_followed_games/",
         {
           method: "GET",
           headers: {
@@ -200,7 +200,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const token = await getToken();
 
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/set_fav_game/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/set_fav_game/",
           {
             method: "PATCH",
             headers: {
@@ -237,7 +237,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const token = await getToken();
 
       const response = await fetch(
-        "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/get_fav_game/",
+        "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/get_fav_game/",
         {
           method: "GET",
           headers: {

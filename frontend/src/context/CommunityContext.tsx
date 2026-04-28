@@ -85,7 +85,7 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
         const token = await getToken();
 
         const response = await fetch(
-          `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/get_posts/`,
+          `https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/get_posts/`,
           {
             method: "GET",
             headers: {
@@ -120,7 +120,7 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
         const token = await getToken();
 
         const response = await fetch(
-          `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/create_post/`,
+          `https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/create_post/`,
           {
             method: "POST",
             headers: {
@@ -160,7 +160,7 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
         const token = await getToken();
 
         const response = await fetch(
-          `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/community-posts/${postId}/like/`,
+          `https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/community-posts/${postId}/like/`,
           {
             method: "PATCH",
             headers: {
@@ -189,7 +189,7 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
         const token = await getToken();
 
         const response = await fetch(
-          `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/community-posts/${postId}/dislike/`,
+          `https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/community-posts/${postId}/dislike/`,
           {
             method: "PATCH",
             headers: {
@@ -218,7 +218,7 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
         const token = await getToken();
 
         const response = await fetch(
-          `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/community-posts/${postId}/`,
+          `https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/community-posts/${postId}/`,
           {
             method: "DELETE",
             headers: {
@@ -251,7 +251,7 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
         const token = await getToken();
 
         const response = await fetch(
-          `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/join/`,
+          `https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/join/`,
           {
             method: "PATCH",
             headers: {
@@ -293,7 +293,7 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
         const token = await getToken();
 
         const response = await fetch(
-          `gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/leave/`,
+          `https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/leave/`,
           {
             method: "PATCH",
             headers: {

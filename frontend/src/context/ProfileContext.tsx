@@ -50,7 +50,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
     try {
       const response = await fetch(
-        "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/profile/",
+        "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/profile/",
         {
           method: "GET",
           headers: {
@@ -80,7 +80,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
     try {
       const response = await fetch(
-        "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/show_wishlist",
+        "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/show_wishlist",
         {
           method: "GET",
           headers: {
@@ -106,7 +106,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
       try {
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/create_wishlist/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/create_wishlist/",
           {
             method: "POST",
             headers: {
@@ -144,7 +144,7 @@ export function UserProvider({ children }: UserProviderProps) {
         console.log("trying to add " + `${game}`);
 
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/add_to_wishlist/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/add_to_wishlist/",
           {
             method: "PATCH",
             headers: {
@@ -181,7 +181,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
     try {
       const response = await fetch(
-        "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/delete_wishlist/",
+        "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/delete_wishlist/",
         {
           method: "DELETE",
           headers: {
@@ -208,7 +208,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
       try {
         const response = await fetch(
-          "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/remove_game_from_list/",
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/remove_game_from_list/",
           {
             method: "PATCH",
             headers: {

@@ -46,7 +46,7 @@ function GamesDisplay({ setGames }: GamesDisplayProps) {
         const token = await getToken()
 
       const response = await fetch(
-        "http://127.0.0.1:8000/api/games/game_search/",
+        "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/games/game_search/",
         {
           method: "POST",
           headers: {

@@ -79,7 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log(token); //for backend testing
 
             const response = await fetch(
-              "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/signup/",
+              "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/signup/",
               {
                 method: "POST",
                 headers: {
@@ -125,7 +125,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 
             const response = await fetch(
-              "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/login/",
+              "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/login/",
               {
                 method: "POST",
                 headers: {
