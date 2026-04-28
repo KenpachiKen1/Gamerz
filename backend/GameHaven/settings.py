@@ -38,9 +38,19 @@ SECRET_KEY = os.getenv('DJANGO_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
+
+
 ALLOWED_HOSTS = [
-    'gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net'
+    "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net",
+]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
 AUTH_USER_MODEL = 'users.User'
 
 CORS_ALLOWED_ORIGINS = [
