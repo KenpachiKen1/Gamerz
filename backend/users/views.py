@@ -236,7 +236,6 @@ class WishlistViewSet(viewsets.ModelViewSet):
                         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
                 return Response({"Success": f"added {game.title} to {wishlist.name}"}, status=status.HTTP_200_OK)
         else:
-                print("Not in the database, going to add it first then add to wishlist")
                 _game = add_game_to_db(game)
                 try:
                     wishlist.games.add(_game)

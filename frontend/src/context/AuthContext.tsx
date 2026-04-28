@@ -61,23 +61,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async function signup(formData: SignupForm): Promise<SignupResponse>{
 
 
-        console.log("1")
       try { 
           
-            console.log("2");
-
             setAuthError(null);
         const { email, password, username, first_name, last_name } = formData
         
-                console.log(`${email}, ${username}, ${password}`);
-
-            
             const credentials = await createUserWithEmailAndPassword(auth, email, password); //creating the firebase id for the user.
             console.log('created auth credentials')
             const token = await credentials.user.getIdToken();
         
-            console.log(token); //for backend testing
-
             const response = await fetch(
               "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/users/signup/",
               {

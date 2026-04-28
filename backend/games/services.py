@@ -17,7 +17,6 @@ def add_game_to_db(game: str) -> Game: #game will be the name of the game chosen
     try:
         token = get_token() #twitch token loading
     except Exception as e:
-        print("The token is not valid")
         return str(e)
     headers = {
         "Client-ID": client_id,
@@ -32,7 +31,6 @@ def add_game_to_db(game: str) -> Game: #game will be the name of the game chosen
     response = requests.post(base_url, headers=headers, data=body)
     data = response.json()
     if not data:
-        print("not working")
         raise ValueError(f"No IGDB results for {game}")
     
     try:
@@ -48,7 +46,6 @@ def add_game_to_db(game: str) -> Game: #game will be the name of the game chosen
                                     description = fields[0].get("summary"),
                                     released = fields[0].get("release_date"), game_image = fields[0].get("cover_art"))
     except Exception as e:
-        print("data is empty")
         return {"Something here is buggy" : str(e)}
     try: #handling adding the platofrms: 
         for plat in fields[0].get("platforms", []):
@@ -82,11 +79,9 @@ def get_token():
             return AuthToken.objects.get(id=1).token
         
         if time.time() < AuthToken.objects.get(id=1).expire_time: #The token exists at this point so just checking the expire time
-            print("Token for IGDB hasn't expired yet")
             return AuthToken.objects.get(id=1).token #returning the token because it's still valid 
         
         #If the time passed the expired time, then i get a new token
-        print("token expired")
         new_token = update_token()
         curr_token = AuthToken.objects.get(id=1)
 
@@ -94,9 +89,7 @@ def get_token():
         curr_token.expire_time = new_token.get("expires_in")
         curr_token.save()
 
-        print("Token expires at:", curr_token.expire_time, "current:", time.time()) #sanity check
         return curr_token.token
     except Exception as e:
-        print("TOKEN ERROR HERE")
         return {"Token error" :str(e)}
     

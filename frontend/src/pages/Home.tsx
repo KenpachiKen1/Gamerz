@@ -157,7 +157,6 @@ export default function Home() {
         }
 
         setTrendingCommunities(data);
-        console.log(data);
       } catch (err) {
         console.error(err);
       }

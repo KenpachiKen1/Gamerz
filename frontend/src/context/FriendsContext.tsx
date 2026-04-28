@@ -250,7 +250,6 @@ export function FriendsProvider({ children }: FriendsProviderProps) {
         ...(data.received_requests ?? []),
       ]);
 
-      console.log(pendingList)
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Could not load pending requests";

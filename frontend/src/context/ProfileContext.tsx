@@ -141,7 +141,6 @@ export function UserProvider({ children }: UserProviderProps) {
       const token = await getToken();
 
       try {
-        console.log("trying to add " + `${game}`);
 
         const response = await fetch(
           "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/wishlists/add_to_wishlist/",
