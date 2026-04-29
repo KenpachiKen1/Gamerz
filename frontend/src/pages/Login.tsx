@@ -25,7 +25,6 @@ export default function Login() {
         setLoading(true);
 
         try {
-            // later: replace with Firebase login
             await login( email, password)
 
         } catch (err) {
@@ -34,7 +33,7 @@ export default function Login() {
             setLoading(false);
         }
 
-        navigate("/");
+        navigate("/home");
 
     };
 

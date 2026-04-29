@@ -51,31 +51,31 @@ const Questionnaire = () => {
   const levels: Level[] = [
     {
       level: "Novice",
-      description: "Just picked up the controller yesterday",
+      description: "New to gaming or just getting started",
       minHours: 1,
       maxHours: 5,
-      color: "#A8E6CF",
+      color: "#38bdf8",
     },
     {
       level: "Casual",
-      description: "Games when Netflix is down.",
+      description: "Plays occasionally for fun and relaxation",
       minHours: 6,
       maxHours: 20,
-      color: "#FFD3B6",
+      color: "#818cf8",
     },
     {
       level: "Dedicated",
-      description: "Has more game achievements than friends",
+      description: "Regular player with consistent playtime",
       minHours: 21,
       maxHours: 50,
-      color: "#FF8C94",
+      color: "#c084fc",
     },
     {
       level: "No Life Legend",
-      description: "Go interact with nature",
+      description: "Highly active player with significant time invested",
       minHours: 51,
       maxHours: 168,
-      color: "#FFD700",
+      color: "#f59e0b",
     },
   ];
 
@@ -173,7 +173,7 @@ const Questionnaire = () => {
           style={{
             textAlign: "center",
             marginBottom: "32px",
-            color: "#333",
+            color: "#343434",
             fontSize: "24px",
           }}
         >
@@ -261,7 +261,7 @@ const Questionnaire = () => {
 
   const sliderContent = () => (
     <>
-      <h2 style={{ textAlign: "center" }}>
+      <h2 style={{ textAlign: "center", color: "#343434" }}>
         About how many hours a week do you game?
       </h2>
 

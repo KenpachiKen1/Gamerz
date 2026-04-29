@@ -83,7 +83,7 @@ export default function SearchResults() {
       <div className="search-results-wrapper">
         <div className="search-results-header">
           <h1>Game Results</h1>
-          <p>Follow a game or set it as your favorite.</p>
+          <p>Join a community or set it as your favorite.</p>
         </div>
 
         {loading && (
@@ -142,7 +142,7 @@ export default function SearchResults() {
                       onClick={() => handleFollow(game.name)}
                       disabled={busyGame === game.name}
                     >
-                      {busyGame === game.name ? "Working..." : "Enter Community"}
+                      {busyGame === game.name ? "Working..." : "Join Community"}
                     </button>
 
                     <button

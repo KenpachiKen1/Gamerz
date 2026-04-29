@@ -100,7 +100,7 @@ function GamesDisplay({ setGames }: GamesDisplayProps) {
         styles={{
           input: {
             backgroundColor: "white",
-            color: "#333",
+            color: "#343434",
           },
         }}
       />
