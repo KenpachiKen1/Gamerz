@@ -256,7 +256,6 @@ const Profile = () => {
               </div>
               <h2>{viewedProfile.username}</h2>
               <p>Main Platform: {viewedProfile.main_platform || "Not set"}</p>
-              <p>Bio: Lorem ipsum</p>
 
               <div className="stats">
                 <div className="stat-item">

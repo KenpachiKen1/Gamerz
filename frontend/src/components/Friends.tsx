@@ -287,6 +287,7 @@ const Friends = ({ Profile }: FriendsProps) => {
       </Button>
       <Modal
         title="Search for users to add"
+        style={{ color: "#343434" }}
         open={friendModal}
         onCancel={() => setFriendModal(false)}
         footer={null}
@@ -318,7 +319,7 @@ const Friends = ({ Profile }: FriendsProps) => {
                     }
                   />
 
-                  <div style={{ margin: "5px" }}>
+                  <div style={{ margin: "5px", color: "#343434" }}>
                     {user.avg_hours_week ?? user.hours ? (
                       <h4>
                         Average gaming hours:{" "}

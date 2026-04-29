@@ -89,7 +89,9 @@ function ProfilePictures({ setPic }: ProfilePicturesProps) {
 
   return (
     <>
-      <h2 style={{ textAlign: "center" }}>Choose a profile picture</h2>
+      <h2 style={{ textAlign: "center", color: "#343434" }}>
+        Choose a profile picture
+      </h2>
 
       {profilePics.map((pic, index) => (
         <Button

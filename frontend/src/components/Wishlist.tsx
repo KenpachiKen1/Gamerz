@@ -206,6 +206,7 @@ const Wishlist = ({ Profile, onChanged }: WishlistProps) => {
                   open={deleteModal}
                   title="Wishlist deletion"
                   onCancel={() => setDeleteModal(false)}
+                  style={{ color: "#343434" }}
                   footer={
                     <Button
                       onClick={handleWishlistDeletion}
@@ -215,12 +216,12 @@ const Wishlist = ({ Profile, onChanged }: WishlistProps) => {
                     </Button>
                   }
                 >
-                  <h4>
+                  <h4 style={{ color: "#343434" }}>
                     You are about to delete your wishlist which has{" "}
                     {userGames.length} games in it, are you sure?
                   </h4>
                   <br />
-                  <h5>
+                  <h5 style={{ color: "#343434" }}>
                     This action cannot be reversed, however you can make a new
                     wishlist any time!
                   </h5>
