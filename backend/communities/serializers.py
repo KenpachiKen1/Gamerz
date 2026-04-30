@@ -97,6 +97,7 @@ class CommunityPostReadSerializer(serializers.ModelSerializer):
             "liked_by_user",
             "disliked_by_user",
             "can_delete",
+            "community",
         ]
 
     def get_like_count(self, obj):

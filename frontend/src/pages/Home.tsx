@@ -37,6 +37,12 @@ type FeedPost = {
   community: {
     id: number;
     title: string;
+    game?: {
+      id: number;
+      title: string;
+      game_image: string;
+    };
+    member_count: number;
   };
   like_count?: number;
   dislike_count?: number;

@@ -382,7 +382,7 @@ class ActivityFeedView(APIView):
             CommunityPost.objects.filter(
                 Q(community__members=user) | Q(poster_id__in=friend_ids)
             )
-            .select_related("poster", "community")
+            .select_related("poster", "community", "community__game")
             .prefetch_related("likes", "dislikes", "replies")
             .distinct()
             .order_by("-creation")
