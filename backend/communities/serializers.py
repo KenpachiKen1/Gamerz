@@ -74,12 +74,14 @@ class CommunityPostWriteSerializer(serializers.ModelSerializer):
 
 class CommunityPostReadSerializer(serializers.ModelSerializer):
     poster = UserReadSerializer(read_only=True)
+    community = CommunityReadSerializer(read_only=True)
     like_count = serializers.SerializerMethodField()
     dislike_count = serializers.SerializerMethodField()
     comment_count = serializers.SerializerMethodField()
     liked_by_user = serializers.SerializerMethodField()
     disliked_by_user = serializers.SerializerMethodField()
     can_delete = serializers.SerializerMethodField()
+    
 
     class Meta:
         model = CommunityPost

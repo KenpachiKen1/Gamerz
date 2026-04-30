@@ -33,6 +33,11 @@ type FeedPost = {
     username: string;
     profile_picture?: string | null;
   };
+
+  community: {
+    id: number;
+    title: string;
+  };
   like_count?: number;
   dislike_count?: number;
   comment_count?: number;
@@ -322,7 +327,6 @@ export default function Home() {
           <div className="sidebar-card">
             <div className="sidebar-header">
               <h2>Your Communities</h2>
-              
             </div>
 
             <div className="community-list">
@@ -366,23 +370,45 @@ export default function Home() {
                 !feedError &&
                 feedPosts.map((post) => (
                   <div key={post.id} className="post">
-                    <h4
-                      className="username"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/profile/${post.poster.username}`);
-                      }}
-                    >
-                      @{post.poster.username}
-                    </h4>
+                    <div className="post-top-row">
+                      <h4
+                        className="username"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/profile/${post.poster.username}`);
+                        }}
+                      >
+                        @{post.poster.username}
+                      </h4>
+                      {post.community?.title && (
+                        <span className="post-community-tag">
+                          {post.community.title}
+                        </span>
+                      )}
+                    </div>
 
                     {post.subject && (
-                      <p>
-                        <strong>{post.subject}</strong>
-                      </p>
+                      <p className="post-subject">{post.subject}</p>
                     )}
-                    <p>{post.body}</p>
-                    <small>{new Date(post.creation).toLocaleString()}</small>
+
+                    <p className="post-body">{post.body}</p>
+
+                    <div className="post-bottom-row">
+                      <span className="post-time">
+                        {new Date(post.creation).toLocaleString()}
+                      </span>
+                      <div className="post-stats">
+                        <span className="post-stat">
+                          ♥ {post.like_count ?? 0}
+                        </span>
+                        <span className="post-stat">
+                          👎 {post.dislike_count ?? 0}
+                        </span>
+                        <span className="post-stat">
+                          💬 {post.comment_count ?? 0}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 ))}
             </div>
