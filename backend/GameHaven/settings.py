@@ -141,6 +141,10 @@ REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = int(os.getenv("REDIS_PORT","6380"))
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 
+print("REDIS_HOST:", REDIS_HOST)
+print("REDIS_PORT:", REDIS_PORT)
+print("REDIS_PASSWORD exists:", bool(REDIS_PASSWORD))
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",

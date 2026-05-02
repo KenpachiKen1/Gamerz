@@ -6,6 +6,7 @@ from .models import ChatRoom
 from .cosmos_service import save_message
 import asyncio
 
+
 class CommunityChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope["user"]

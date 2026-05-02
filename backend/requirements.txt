@@ -1,5 +1,6 @@
 anyio==4.13.0
 asgiref==3.11.1
+asyncio==4.0.0
 attrs==26.1.0
 autobahn==25.12.2
 Automat==25.4.16
