@@ -18,8 +18,6 @@ load_dotenv()
 import os, json
 import firebase_admin
 from firebase_admin import credentials, auth
-import logging
-
 
 firebase_creds_str = os.getenv("FIREBASE_CREDENTIALS")
 
@@ -143,32 +141,12 @@ REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = int(os.getenv("REDIS_PORT","6380"))
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 
-
-logger = logging.getLogger("django")
-
-logger.warning(f"REDIS_HOST: {REDIS_HOST}")
-logger.warning(f"REDIS_PORT: {REDIS_PORT}")
-logger.warning(f"REDIS_PASSWORD exists: {bool(REDIS_PASSWORD)}")
-
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [
-                {
-                    "address": f"rediss://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0",
-                    "ssl_cert_reqs": None,
-                    "socket_timeout": 5,           # ADD THIS
-                    "socket_connect_timeout": 5,   # ADD THIS
-                    "retry_on_timeout": True,       # ADD THIS
-                    "socket_keepalive": True,       # ADD THIS
-                }
-            ],
-            "capacity": 1500,
-            "expiry": 10, 
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
