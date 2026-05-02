@@ -43,6 +43,8 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = [
     "gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net",
     "169.254.130.3",
+    "169.254.130.2",
+    ".azurewebsites.net",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
