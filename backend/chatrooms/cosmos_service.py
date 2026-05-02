@@ -15,7 +15,7 @@ def get_container():
         return _container
 
     endpoint = os.getenv("COSMOS_ENDPOINT")
-    key = str(os.getenv("COSMOS_KEY"))
+    key = os.getenv("COSMOS_KEY")
     database_name = os.getenv("COSMOS_DATABASE")
     container_name = os.getenv("COSMOS_CHAT_CONTAINER")
 
@@ -33,10 +33,7 @@ def get_container():
     if missing:
         raise RuntimeError(f"Missing Cosmos env vars: {', '.join(missing)}")
 
-    key = str(key).strip()
-    endpoint = str(endpoint).strip()
-
-    client = CosmosClient(endpoint, credential=key)
+    client = CosmosClient(str(endpoint).strip(), credential=str(key).strip())
 
     database = client.create_database_if_not_exists(id=database_name)
 
@@ -68,31 +65,5 @@ def save_message(
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    container = get_container()
-    container.create_item(body=item)
-
+    get_container().create_item(body=item)
     return item
-
-
-def get_chat_messages(chatroom_id, limit=15):
-    query = """
-        SELECT TOP @limit *
-        FROM c
-        WHERE c.chatroom_id = @chatroom_id
-        ORDER BY c.created_at ASC
-    """
-
-    parameters = [
-        {"name": "@chatroom_id", "value": str(chatroom_id)},
-        {"name": "@limit", "value": limit},
-    ]
-
-    container = get_container()
-
-    return list(
-        container.query_items(
-            query=query,
-            parameters=parameters,
-            partition_key=str(chatroom_id),
-        )
-    )
