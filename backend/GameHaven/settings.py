@@ -146,12 +146,14 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [
-                f"rediss://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0"  
-                ],
+                {
+                    "address": f"rediss://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0",
+                    "ssl_cert_reqs": None,
+                }
+            ],
         },
     },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
