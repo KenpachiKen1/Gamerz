@@ -14,15 +14,15 @@ class CommunityChatConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        self.chatroom_id = self.scope["url_route"]["kwargs"]["chatroom_id"]
+        self.community_id = self.scope["url_route"]["kwargs"]["community_id"]
         self.chatroom = await self.get_chat_room_for_user()
 
         if not self.chatroom:
             await self.close()
             return
 
-        self.community_id = self.chatroom.community.id
-        self.group_name = f"chatroom_{self.chatroom_id}"
+        self.chatroom_id = self.chatroom.id
+        self.group_name = f"community_{self.community_id}"
 
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
@@ -83,10 +83,10 @@ class CommunityChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_chat_room_for_user(self):
         return (
-            ChatRoom.objects.filter(
-                id=self.chatroom_id,
-                community__members__id=self.user.id,
-            )
-            .select_related("community")
-            .first()
+        ChatRoom.objects.filter(
+            community_id=self.community_id,
+            community__members__id=self.user.id,
         )
+        .select_related("community")
+        .first()
+    )

@@ -143,18 +143,9 @@ REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [
-                {
-                    "address": f"rediss://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0",
-                    "ssl_cert_reqs": None,
-                }
-            ],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
