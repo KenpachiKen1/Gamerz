@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .models import ChatRoom
 from .cosmos_service import save_message
-
+import asyncio
 
 class CommunityChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -29,10 +29,16 @@ class CommunityChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         if hasattr(self, "group_name"):
-            await self.channel_layer.group_discard(
-                self.group_name,
-                self.channel_name,
-            )
+            try:
+                await asyncio.wait_for(
+                    self.channel_layer.group_discard(
+                        self.group_name,
+                        self.channel_name,
+                    ),
+                    timeout=3.0  # Don't let Redis hang shutdown
+                )
+            except asyncio.TimeoutError:
+                pass  # Log this if you want, but don't block shutdown
 
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data or "{}")

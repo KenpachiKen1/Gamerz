@@ -143,9 +143,24 @@ REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                {
+                    "address": f"rediss://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0",
+                    "ssl_cert_reqs": None,
+                    "socket_timeout": 5,           # ADD THIS
+                    "socket_connect_timeout": 5,   # ADD THIS
+                    "retry_on_timeout": True,       # ADD THIS
+                    "socket_keepalive": True,       # ADD THIS
+                }
+            ],
+            "capacity": 1500,
+            "expiry": 10, 
+        },
     },
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
