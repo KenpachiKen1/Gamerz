@@ -15,7 +15,7 @@ def get_container():
         return _container
 
     endpoint = os.getenv("COSMOS_ENDPOINT")
-    key = os.getenv("COSMOS_KEY")
+    key = str(os.getenv("COSMOS_KEY"))
     database_name = os.getenv("COSMOS_DATABASE")
     container_name = os.getenv("COSMOS_CHAT_CONTAINER")
 
