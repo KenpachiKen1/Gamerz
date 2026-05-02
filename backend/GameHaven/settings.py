@@ -18,6 +18,8 @@ load_dotenv()
 import os, json
 import firebase_admin
 from firebase_admin import credentials, auth
+import logging
+
 
 firebase_creds_str = os.getenv("FIREBASE_CREDENTIALS")
 
@@ -141,9 +143,12 @@ REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_PORT = int(os.getenv("REDIS_PORT","6380"))
 REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
 
-print("REDIS_HOST:", REDIS_HOST)
-print("REDIS_PORT:", REDIS_PORT)
-print("REDIS_PASSWORD exists:", bool(REDIS_PASSWORD))
+
+logger = logging.getLogger("django")
+
+logger.warning(f"REDIS_HOST: {REDIS_HOST}")
+logger.warning(f"REDIS_PORT: {REDIS_PORT}")
+logger.warning(f"REDIS_PASSWORD exists: {bool(REDIS_PASSWORD)}")
 
 CHANNEL_LAYERS = {
     "default": {
