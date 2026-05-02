@@ -134,11 +134,17 @@ DATABASES = {
     }
 }
 
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = int(os.getenv("REDIS_PORT","6380"))
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [
+                f"rediss://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0"  
+                ],
         },
     },
 }
