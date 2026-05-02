@@ -10,6 +10,20 @@ COSMOS_KEY = os.getenv("COSMOS_KEY")
 COSMOS_DATABASE = os.getenv("COSMOS_DATABASE")
 COSMOS_CHAT_CONTAINER = os.getenv("COSMOS_CHAT_CONTAINER")
 
+
+missing = [
+    name for name in [
+        "COSMOS_ENDPOINT",
+        "COSMOS_KEY",
+        "COSMOS_DATABASE",
+        "COSMOS_CHAT_CONTAINER",
+    ]
+    if not os.getenv(name)
+]
+
+if missing:
+    raise RuntimeError(f"Missing Cosmos env vars: {', '.join(missing)}")
+
 client = CosmosClient(COSMOS_ENDPOINT, credential=COSMOS_KEY)
 
 database = client.create_database_if_not_exists(id=COSMOS_DATABASE)
