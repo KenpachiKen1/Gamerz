@@ -31,46 +31,7 @@ type Community = {
     id: number;
     title: string;
   };
-}; 
-
-const MOCK_CLIPS = [
-  {
-    id: 1,
-    title: "Clutch 1v4 ranked",
-    username: "virgil25",
-    videoUrl: "/videos/clip1.mp4",
-  },
-  {
-    id: 2,
-    title: "Worst death you'll see",
-    username: "jalen16",
-    videoUrl: "/videos/clip2.mp4",
-  },
-  {
-    id: 3,
-    title: "New meta strat",
-    username: "kenneth88",
-    videoUrl: "/videos/clip3.mp4",
-  },
-  {
-    id: 4,
-    title: "Bugs nest speed run",
-    username: "bryson09",
-    videoUrl: "/videos/clip4.mp4",
-  },
-  {
-    id: 5,
-    title: "Insane snipe across map",
-    username: "mia_plays",
-    videoUrl: "/videos/clip5.mp4",
-  },
-  {
-    id: 6,
-    title: "Squad wipe in 8 seconds",
-    username: "virgil25",
-    videoUrl: "/videos/clip6.mp4",
-  },
-];
+};
 
 const initials = (name: string) => name.slice(0, 2).toUpperCase();
 
@@ -92,8 +53,6 @@ export default function Community() {
   const { getToken } = useAuth();
   const navigate = useNavigate();
   const { name, id } = useParams<{ name?: string; id?: string }>();
-
-  
 
   const communityName =
     typeof community?.title === "string"
@@ -117,6 +76,8 @@ export default function Community() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [uploadModal, setUploadModal] = useState(false);
   const [isSubmittingPost, setIsSubmittingPost] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [clipTitle, setClipTitle] = useState("");
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<WebSocket | null>(null);
@@ -136,7 +97,7 @@ export default function Community() {
       try {
         const token = String(await getToken());
 
-         socket = new WebSocket(
+        socket = new WebSocket(
           `wss://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/ws/chat/${id}/?token=${encodeURIComponent(
             token
           )}`
@@ -169,6 +130,7 @@ export default function Community() {
 
     return () => {
       socket?.close();
+      socketRef.current = null;
     };
   }, [id, getToken]);
 
@@ -179,20 +141,24 @@ export default function Community() {
   if (!id) return null;
 
   const handleCreatePost = async () => {
-    if (!postContent.trim()) return;
+    if (!postContent.trim() && !selectedFile) return;
 
     setIsSubmittingPost(true);
 
     const success = await createCommunityPost(
       Number(id),
-      postSubject,
-      postContent
+      postSubject || clipTitle,
+      postContent,
+      selectedFile
     );
 
     if (success) {
       setPostContent("");
       setPostSubject("");
+      setClipTitle("");
+      setSelectedFile(null);
       setPostType("discussion");
+      setUploadModal(false);
     }
 
     setIsSubmittingPost(false);
@@ -212,7 +178,8 @@ export default function Community() {
     await deletePost(postId);
   };
 
-  
+  const isJoined = community?.joined_by_user === true;
+
   const handleCommunityToggle = async () => {
     if (!id) return;
 
@@ -241,8 +208,21 @@ export default function Community() {
     setChatInput("");
   };
 
-  const filteredPosts = posts;
-  const isJoined = community?.joined_by_user === true;
+  const renderPostMedia = (post: any) => (
+    <>
+      {post.media && post.media_type === "image" && (
+        <img
+          src={post.media}
+          alt={post.subject || "Post media"}
+          className="post-media"
+        />
+      )}
+
+      {post.media && post.media_type === "video" && (
+        <video src={post.media} controls className="post-media" />
+      )}
+    </>
+  );
 
   const renderMessages = () => (
     <>
@@ -311,6 +291,8 @@ export default function Community() {
       )}
     </div>
   );
+
+  const filteredPosts = posts;
 
   return (
     <div className="community-container">
@@ -444,7 +426,10 @@ export default function Community() {
                   {postType === "clip" && (
                     <button
                       className="post-type-btn active"
-                      onClick={() => setUploadModal(true)}
+                      onClick={() => {
+                        setPostType("clip");
+                        setUploadModal(true);
+                      }}
                     >
                       ⬆ Upload
                     </button>
@@ -454,7 +439,9 @@ export default function Community() {
                 <button
                   className="btn-submit-post"
                   onClick={handleCreatePost}
-                  disabled={!postContent.trim() || isSubmittingPost}
+                  disabled={
+                    (!postContent.trim() && !selectedFile) || isSubmittingPost
+                  }
                 >
                   {isSubmittingPost ? "Posting..." : "Post"}
                 </button>
@@ -503,7 +490,9 @@ export default function Community() {
                     <span className="post-tag">{post.subject || "post"}</span>
                   </div>
 
-                  <p className="post-content">{post.body}</p>
+                  {post.body && <p className="post-content">{post.body}</p>}
+
+                  {renderPostMedia(post)}
 
                   <div className="post-footer">
                     <button
@@ -583,17 +572,9 @@ export default function Community() {
 
             <div className="comm-card">
               <h3>Community Clips</h3>
-              <div className="clips-grid">
-                {MOCK_CLIPS.map((clip) => (
-                  <div key={clip.id} className="clip-item">
-                    <video src={clip.videoUrl} muted controls />
-                    <div className="clip-item-meta">
-                      <p className="clip-item-title">{clip.title}</p>
-                      <p className="clip-item-user">@{clip.username}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p style={{ color: "#94a3b8" }}>
+                Uploaded community clips will appear in the feed once posted.
+              </p>
             </div>
           </div>
         </div>
@@ -636,20 +617,30 @@ export default function Community() {
       <Modal
         title="Upload a Clip"
         open={uploadModal}
-        onCancel={() => setUploadModal(false)}
+        onCancel={() => {
+          setUploadModal(false);
+          setSelectedFile(null);
+          setClipTitle("");
+        }}
         footer={
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
             <button
               className="filter-btn"
-              onClick={() => setUploadModal(false)}
+              onClick={() => {
+                setUploadModal(false);
+                setSelectedFile(null);
+                setClipTitle("");
+              }}
             >
               Cancel
             </button>
+
             <button
               className="btn-submit-post"
-              onClick={() => setUploadModal(false)}
+              onClick={handleCreatePost}
+              disabled={!selectedFile || isSubmittingPost}
             >
-              Upload
+              {isSubmittingPost ? "Uploading..." : "Upload"}
             </button>
           </div>
         }
@@ -657,15 +648,30 @@ export default function Community() {
         <div className="upload-area" style={{ marginBottom: 12 }}>
           <div className="upload-icon">🎬</div>
           <p>
-            <strong>Click to select a file</strong>
+            <strong>Select an image or video</strong>
           </p>
-          <p style={{ marginTop: 4 }}>MP4, MOV up to 500MB</p>
-          <input type="file" accept="video/*" style={{ display: "none" }} />
+          <p style={{ marginTop: 4 }}>
+            Images or videos up to your upload limit
+          </p>
+
+          <input
+            type="file"
+            accept="image/*,video/*"
+            onChange={(e) => {
+              setSelectedFile(e.target.files?.[0] ?? null);
+            }}
+          />
         </div>
+
+        {selectedFile && (
+          <p style={{ marginTop: 8 }}>Selected: {selectedFile.name}</p>
+        )}
 
         <input
           className="create-post-input"
           placeholder="Add a title for your clip..."
+          value={clipTitle}
+          onChange={(e) => setClipTitle(e.target.value)}
           style={{
             width: "100%",
             padding: "10px 14px",

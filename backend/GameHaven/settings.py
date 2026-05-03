@@ -84,9 +84,12 @@ INSTALLED_APPS = [
     'communities',
     'chatrooms',
     'django_extensions',
-
+    "storages",
 
 ]
+AZURE_ACCOUNT_NAME = os.getenv("AZURE_ACCOUNT_NAME")
+AZURE_ACCOUNT_KEY = os.getenv("AZURE_ACCOUNT_KEY")
+AZURE_CONTAINER = os.getenv("AZURE_CONTAINER", "media")
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

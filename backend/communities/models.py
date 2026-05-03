@@ -18,6 +18,8 @@ class CommunityPost(models.Model):
     creation = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name='post_likes', blank=True, editable=True)
     dislikes = models.ManyToManyField(User, related_name='post_dislikes', blank=True, editable=True)
+    media = models.FileField(upload_to="community_posts/", null=True, blank = True)
+    media_type = models.CharField(max_length=20, null=True, blank=True)
 
     def __str__(self):
         return f"Poster: {self.poster.username} - Subject: {self.subject}"

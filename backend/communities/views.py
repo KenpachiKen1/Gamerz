@@ -15,6 +15,8 @@ from .serializers import (
 )
 from rest_framework.views import APIView
 
+from chatrooms.cosmos_service import save_community_post
+
 
 class CommunityViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -102,10 +104,28 @@ class CommunityViewSet(viewsets.ModelViewSet):
         data.sort(key=lambda c: c.get("member_count", 0), reverse=True)
 
         return Response(data[:6], status=status.HTTP_200_OK)
+                
+
     @action(detail=True, methods=["POST"])
     def create_post(self, request, pk=None):
         user = request.user
-        community = get_object_or_404(self.get_queryset(), id=pk)
+        community = get_object_or_404(Community, id=pk)
+
+        uploaded_file = request.FILES.get("media")
+        media_type = None
+
+        if uploaded_file:
+            content_type = uploaded_file.content_type
+
+            if content_type.startswith("image/"):
+                media_type = "image"
+            elif content_type.startswith("video/"):
+                media_type = "video"
+            else:
+                return Response(
+                    {"error": "Only images and videos are allowed."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         serializer = CommunityPostWriteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -115,6 +135,21 @@ class CommunityViewSet(viewsets.ModelViewSet):
             poster=user,
             subject=serializer.validated_data.get("subject"),
             body=serializer.validated_data.get("body"),
+            media=uploaded_file,
+            media_type=media_type,
+        )
+
+        media_url = post.media.url if post.media else None
+
+        save_community_post(
+            post_id=post.id,
+            community_id=community.id,
+            community_title=community.title,
+            author=user,
+            subject=post.subject,
+            body=post.body,
+            media_url=media_url,
+            media_type=post.media_type,
         )
 
         read_serializer = CommunityPostReadSerializer(

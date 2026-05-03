@@ -28,12 +28,13 @@ type FeedPost = {
   subject: string;
   body: string;
   creation: string;
+  media?: string | null;
+  media_type?: "image" | "video" | null;
   poster: {
     id: number;
     username: string;
     profile_picture?: string | null;
   };
-
   community: {
     id: number;
     title: string;

@@ -81,7 +81,9 @@ class CommunityPostReadSerializer(serializers.ModelSerializer):
     liked_by_user = serializers.SerializerMethodField()
     disliked_by_user = serializers.SerializerMethodField()
     can_delete = serializers.SerializerMethodField()
-    
+
+    media = serializers.FileField(read_only=True)
+    media_type = serializers.CharField(read_only=True)
 
     class Meta:
         model = CommunityPost
@@ -98,6 +100,8 @@ class CommunityPostReadSerializer(serializers.ModelSerializer):
             "disliked_by_user",
             "can_delete",
             "community",
+            "media",        
+            "media_type",   
         ]
 
     def get_like_count(self, obj):

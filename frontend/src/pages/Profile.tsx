@@ -52,6 +52,8 @@ type ProfilePost = {
   like_count?: number;
   dislike_count?: number;
   comment_count?: number;
+  media?: string | null;
+  media_type?: "image" | "video" | null;
 };
 
 const Profile = () => {

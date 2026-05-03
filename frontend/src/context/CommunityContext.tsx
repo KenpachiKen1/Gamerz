@@ -54,7 +54,8 @@ type CommunityContextType = {
   createCommunityPost: (
     communityId: number,
     subject: string,
-    body: string
+    body: string,
+    media: File | null
   ) => Promise<boolean>;
   likePost: (postId: number) => Promise<void>;
   dislikePost: (postId: number) => Promise<void>;
@@ -111,46 +112,38 @@ export const CommunityProvider = ({ children }: { children: ReactNode }) => {
     [getToken]
   );
 
-  const createCommunityPost = useCallback(
-    async (communityId: number, subject: string, body: string) => {
-      setLoading(true);
-      setError(null);
+  const createCommunityPost = async (
+    communityId: number,
+    subject: string,
+    body: string,
+    media?: File | null
+  ) => {
+    const token = await getToken();
 
-      try {
-        const token = await getToken();
+    const formData = new FormData();
+    formData.append("subject", subject);
+    formData.append("body", body);
 
-        const response = await fetch(
-          `https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/create_post/`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-            body: JSON.stringify({
-              subject,
-              body,
-            }),
-          }
-        );
+    if (media) {
+      formData.append("media", media);
+    }
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to create post");
-        }
-
-        setPosts((prev) => [data, ...prev]);
-        return true;
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
-        return false;
-      } finally {
-        setLoading(false);
+    const response = await fetch(
+      `https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/${communityId}/create_post/`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
       }
-    },
-    [getToken]
-  );
+    );
+
+    if (!response.ok) return false;
+
+    await fetchCommunityPosts(communityId);
+    return true;
+  };
 
   const likePost = useCallback(
     async (postId: number) => {
