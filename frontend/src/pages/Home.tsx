@@ -53,7 +53,6 @@ export default function Home() {
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [postModal, setPostModal] = useState(false);
   const [postContent, setPostContent] = useState("");
 
@@ -235,16 +234,6 @@ export default function Home() {
     },
   ];
 
-  const visibleClips = clips.slice(currentIndex, currentIndex + 3);
-
-  const next = () => {
-    if (currentIndex + 3 < clips.length) setCurrentIndex(currentIndex + 1);
-  };
-
-  const prev = () => {
-    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
-  };
-
   const openCommunity = (community: Community) => {
     navigate(
       `/community/${community.id}/${community.title
@@ -425,13 +414,9 @@ export default function Home() {
           <div className="section-card">
             <div className="section-header">
               <h2>Featured Clips</h2>
-              <div className="carousel-controls">
-                <button onClick={prev}>◀</button>
-                <button onClick={next}>▶</button>
-              </div>
             </div>
             <div className="carousel">
-              {visibleClips.map((clip) => (
+              {clips.map((clip) => (
                 <ClipCard
                   key={clip.id}
                   title={clip.title}

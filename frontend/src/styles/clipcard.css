@@ -2,7 +2,9 @@
 
 .clip-card {
     position: relative;
-    width: 200px;
+    min-width: 220px;
+    width: 220px;
+    flex-shrink: 0;
     height: 280px;
     border-radius: 14px;
     overflow: hidden;
