@@ -145,7 +145,7 @@ export default function Community() {
 
     setIsSubmittingPost(true);
 
-    const maxSize = 9 * 1024 * 1024; // 9MB
+    const maxSize = 15 * 1024 * 1024; // 15MB
 
     if (selectedFile) {
       if (selectedFile.size > maxSize) {
