@@ -136,8 +136,8 @@ export default function Community() {
       try {
         const token = String(await getToken());
 
-        socket = new WebSocket(
-          `ws://127.0.0.1:8000/ws/chat/${id}/?token=${encodeURIComponent(
+         socket = new WebSocket(
+          `wss://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/ws/chat/${id}/?token=${encodeURIComponent(
             token
           )}`
         );
