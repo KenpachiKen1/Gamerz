@@ -145,6 +145,25 @@ export default function Community() {
 
     setIsSubmittingPost(true);
 
+    const maxSize = 9 * 1024 * 1024; // 9MB
+
+    if (selectedFile) {
+      if (selectedFile.size > maxSize) {
+        alert("File is too large. Max size is 9MB.");
+        return;
+      }
+
+      const validTypes = ["image/", "video/"];
+      const isValidType = validTypes.some((type) =>
+        selectedFile.type.startsWith(type)
+      );
+
+      if (!isValidType) {
+        alert("Only images and videos are allowed.");
+        return;
+      }
+    }
+
     const success = await createCommunityPost(
       Number(id),
       postSubject || clipTitle,

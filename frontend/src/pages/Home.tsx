@@ -72,6 +72,8 @@ export default function Home() {
   const { isAuthenticated, logout, getToken } = useAuth();
   const { profile, getProfile } = useAccount();
 
+  const [featuredClips, setFeaturedClips] = useState<FeedPost[]>([]);
+
   useEffect(() => {
     if (!profile) {
       getProfile();
@@ -177,6 +179,37 @@ export default function Home() {
     fetchTrendingCommunities();
   }, [getToken]);
 
+
+  useEffect(() => {
+    const fetchFeaturedClips = async () => {
+      try {
+        const token = await getToken();
+
+        const response = await fetch(
+          "https://gamerz-backend-g4ctbqh9dwbxc3fd.eastus2-01.azurewebsites.net/api/communities/clips/",
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to load clips");
+        }
+
+        setFeaturedClips(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchFeaturedClips();
+  }, [getToken]);
+
   const handleLogout = async () => {
     await logout();
   };
@@ -197,51 +230,20 @@ export default function Home() {
     navigate(`/search?query=${encodeURIComponent(search.trim())}`);
   };
 
-  const clips = [
-    {
-      id: 1,
-      title: "bf6 night vision",
-      username: "virgil25",
-      videoUrl: "/videos/clip1.mp4",
-    },
-    {
-      id: 2,
-      title: "worst doom player",
-      username: "virgil25",
-      videoUrl: "/videos/clip2.mp4",
-    },
-    {
-      id: 3,
-      title: "When bro calling you on dc but you're locking in",
-      username: "kenneth88",
-      videoUrl: "/videos/clip3.mp4",
-    },
-    {
-      id: 4,
-      title: "In the bugs nest",
-      username: "bryson09",
-      videoUrl: "/videos/clip4.mp4",
-    },
-    {
-      id: 5,
-      title: "A380 landing",
-      username: "virgil25",
-      videoUrl: "/videos/clip5.mp4",
-    },
-    {
-      id: 6,
-      title: "cutting up in assetto",
-      username: "jalen16",
-      videoUrl: "/videos/clip6.mp4",
-    },
-  ];
+  const clips = featuredClips.map((post) => ({
+    id: post.id,
+    title: post.subject || post.body || "Community clip",
+    username: post.poster.username,
+    videoUrl: post.media as string,
+  }));
+
 
   const visibleClips = clips.slice(currentIndex, currentIndex + 3);
 
   const next = () => {
     if (currentIndex + 3 < clips.length) setCurrentIndex(currentIndex + 1);
   };
-
+  
   const prev = () => {
     if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
   };
@@ -253,7 +255,27 @@ export default function Home() {
         .replace(/\s+/g, "-")}`
     );
   };
+  
 
+  const renderPostMedia = (post: {
+    media?: string | null;
+    media_type?: string | null;
+    subject?: string;
+  }) => (
+    <>
+      {post.media && post.media_type === "image" && (
+        <img
+          src={post.media}
+          alt={post.subject || "Post media"}
+          className="post-media"
+        />
+      )}
+
+      {post.media && post.media_type === "video" && (
+        <video src={post.media} controls className="post-media" />
+      )}
+    </>
+  );
   return (
     <div className="home-container">
       <nav className="navbar">
@@ -399,6 +421,7 @@ export default function Home() {
                     )}
 
                     <p className="post-body">{post.body}</p>
+                    {renderPostMedia(post)}
 
                     <div className="post-bottom-row">
                       <span className="post-time">

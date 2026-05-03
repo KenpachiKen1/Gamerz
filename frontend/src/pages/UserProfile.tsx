@@ -223,6 +223,26 @@ export default function UserProfile() {
     );
   };
 
+  const renderPostMedia = (post: {
+    media?: string | null;
+    media_type?: string | null;
+    subject?: string;
+  }) => (
+    <>
+      {post.media && post.media_type === "image" && (
+        <img
+          src={post.media}
+          alt={post.subject || "Post media"}
+          className="post-media"
+        />
+      )}
+
+      {post.media && post.media_type === "video" && (
+        <video src={post.media} controls className="post-media" />
+      )}
+    </>
+  );
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
@@ -300,6 +320,7 @@ export default function UserProfile() {
                         <p className="profile-post-subject">{post.subject}</p>
                       )}
                       <p className="profile-post-body">{post.body}</p>
+                      {renderPostMedia(post)}
                       <div className="profile-post-footer">
                         <span className="profile-post-time">
                           {new Date(post.creation).toLocaleString()}

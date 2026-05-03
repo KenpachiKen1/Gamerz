@@ -16,6 +16,7 @@ from .serializers import (
 from rest_framework.views import APIView
 
 from chatrooms.cosmos_service import save_community_post
+from django.db.models import Count
 
 
 class CommunityViewSet(viewsets.ModelViewSet):
@@ -104,6 +105,23 @@ class CommunityViewSet(viewsets.ModelViewSet):
         data.sort(key=lambda c: c.get("member_count", 0), reverse=True)
 
         return Response(data[:6], status=status.HTTP_200_OK)
+    
+
+    @action(detail=False, methods=["GET"])
+    def clips(self, request):
+        posts = (
+            CommunityPost.objects.filter(media_type="video", media__isnull=False)
+            .select_related("poster", "community", "community__game").annotate(like_count=Count("likes"))
+            .order_by("-creation")[:6]
+        )
+
+        serializer = CommunityPostReadSerializer(
+            posts,
+            many=True,
+            context={"request": request},
+        )
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
                 
 
     @action(detail=True, methods=["POST"])
