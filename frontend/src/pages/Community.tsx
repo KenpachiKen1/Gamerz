@@ -4,7 +4,7 @@ import { Avatar, Modal } from "antd";
 import "../styles/community.css";
 import { useCommunity } from "../context/CommunityContext";
 import { useAuth } from "../context/AuthContext";
-
+import ClipCard from "../components/ClipCard";
 type FeedTab = "feed" | "clips" | "chat";
 type PostFilter = "posts";
 
@@ -242,6 +242,16 @@ export default function Community() {
       )}
     </>
   );
+
+
+  const communityClips = posts.filter((post: any) => post.media && post.media_type === "video")
+    .map((post: any) => ({
+      id: post.id,
+      title: post.subject || post.body || "Community Clip",
+      username: post.poster?.username,
+      videoUrl: post.media
+    }));
+  
 
   const renderMessages = () => (
     <>
@@ -585,15 +595,29 @@ export default function Community() {
                 <p>
                   <strong>Click to upload</strong> or drag and drop
                 </p>
-                <p style={{ marginTop: 4 }}>MP4, MOV up to 500MB</p>
+                <p style={{ marginTop: 4 }}>upload a video up to 15MB</p>
               </div>
             </div>
 
             <div className="comm-card">
               <h3>Community Clips</h3>
-              <p style={{ color: "#94a3b8" }}>
-                Uploaded community clips will appear in the feed once posted.
-              </p>
+
+              {communityClips.length === 0 ? (
+                <p style={{ color: "#94a3b8" }}>
+                  No clips have been posted in this community yet.
+                </p>
+              ) : (
+                <div className="clips-grid">
+                  {communityClips.map((clip) => (
+                    <ClipCard
+                      key={clip.id}
+                      title={clip.title}
+                      username={clip.username}
+                      videoUrl={clip.videoUrl}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
