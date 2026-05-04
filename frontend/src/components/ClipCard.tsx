@@ -1,60 +1,86 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Modal } from "antd";
 import "../styles/clipcard.css";
 
 type ClipCardProps = {
-    title: string;
-    videoUrl?: string;
-    username?: string;
+  title: string;
+  videoUrl?: string;
+  username?: string;
 };
 
-export default function ClipCard({
-    title,
-    videoUrl = "https://38613882-69f4-4e51-b230-0779359f369f.mdnplay.dev/shared-assets/videos/flower.webm",
-    username = "User",
-}: ClipCardProps) {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const navigate = useNavigate();
+export default function ClipCard({ title, videoUrl, username }: ClipCardProps) {
+  const previewVideoRef = useRef<HTMLVideoElement>(null);
+  const modalVideoRef = useRef<HTMLVideoElement>(null);
+  const navigate = useNavigate();
+  const [videoModal, setVideoModal] = useState(false);
 
-    const handleMouseEnter = () => {
-        videoRef.current?.play();
-    };
+  const handleMouseEnter = () => {
+    previewVideoRef.current?.play().catch(() => {});
+  };
 
-    const handleMouseLeave = () => {
-        if (videoRef.current) {
-            videoRef.current.pause();
-            videoRef.current.currentTime = 0;
-        }
-    };
+  const handleMouseLeave = () => {
+    if (previewVideoRef.current) {
+      previewVideoRef.current.pause();
+      previewVideoRef.current.currentTime = 0;
+    }
+  };
 
-    const goToProfile = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        navigate(`/profile/${username}`);
-    };
+  const goToProfile = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (username) {
+      navigate(`/profile/${username}`);
+    }
+  };
 
-    return (
-        <div
-            className="clip-card"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            <video
-                ref={videoRef}
-                className="clip-video"
-                muted
-                loop
-                playsInline
-            >
-                <source src={videoUrl} type="video/mp4" />
-            </video>
+  const closeModal = () => {
+    modalVideoRef.current?.pause();
+    setVideoModal(false);
+  };
 
-            {/* Overlay */}
-            <div className="clip-overlay">
-                <p className="clip-user" onClick={goToProfile}>
-                    @{username}
-                </p>
-                <p className="clip-title">{title}</p>
-            </div>
+  return (
+    <>
+      <div
+        className="clip-card"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={() => setVideoModal(true)}
+      >
+        <video
+          ref={previewVideoRef}
+          className="clip-video"
+          muted
+          loop
+          playsInline
+          src={videoUrl}
+        />
+
+        <div className="clip-overlay">
+          {username && (
+            <p className="clip-user" onClick={goToProfile}>
+              @{username}
+            </p>
+          )}
+          <p className="clip-title">{title}</p>
         </div>
-    );
+      </div>
+
+      <Modal
+        open={videoModal}
+        onCancel={closeModal}
+        footer={null}
+        title={title}
+        width={800}
+      >
+        <video
+          ref={modalVideoRef}
+          className="clip-modal-video"
+          controls
+          autoPlay
+          src={videoUrl}
+          style={{ width: "100%", borderRadius: 12 }}
+        />
+      </Modal>
+    </>
+  );
 }

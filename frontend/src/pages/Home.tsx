@@ -74,6 +74,7 @@ export default function Home() {
 
   const [featuredClips, setFeaturedClips] = useState<FeedPost[]>([]);
 
+
   useEffect(() => {
     if (!profile) {
       getProfile();
@@ -243,7 +244,7 @@ export default function Home() {
   const next = () => {
     if (currentIndex + 3 < clips.length) setCurrentIndex(currentIndex + 1);
   };
-  
+
   const prev = () => {
     if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
   };
@@ -461,6 +462,8 @@ export default function Home() {
                   title={clip.title}
                   username={clip.username}
                   videoUrl={clip.videoUrl}
+
+
                 />
               ))}
             </div>

@@ -149,7 +149,7 @@ export default function Community() {
 
     if (selectedFile) {
       if (selectedFile.size > maxSize) {
-        alert("File is too large. Max size is 9MB.");
+        alert("File is too large. Max size is 15MB.");
         return;
       }
 
