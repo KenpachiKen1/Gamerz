@@ -25,8 +25,39 @@
 .activity-feed {
     flex: 2;
     min-width: 280px;
+    position: sticky;
+    top: 20px;
+    align-self: flex-start;
 }
 
+.activity-feed .section-card {
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.feed {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+
+    overflow-y: auto;
+    max-height: calc(85vh - 80px);
+    padding-right: 6px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
+}
+
+.feed::-webkit-scrollbar {
+    width: 6px;
+}
+
+.feed::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 6px;
+}
 .username {
     cursor: pointer;
     color: #38bdf8;
