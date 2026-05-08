@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useFriends } from "../context/FriendsContext";
 import Sidebar from "../components/sidebar";
-import "../styles/profile.css";
+import "../styles/userProfile.css";
 
 const { Content } = Layout;
 
@@ -56,6 +56,7 @@ export default function UserProfile() {
   const navigate = useNavigate();
   const { username } = useParams<{ username: string }>();
   const { getToken } = useAuth();
+
   const {
     add_friend,
     remove_friend,
@@ -146,7 +147,7 @@ export default function UserProfile() {
   }, [username, getToken]);
 
   if (loading || !viewedProfile) {
-    return <p>Loading profile...</p>;
+    return <p className="user-profile-loading">Loading profile...</p>;
   }
 
   const handleFavoriteGameClick = () => {
@@ -167,7 +168,7 @@ export default function UserProfile() {
     if (!status || status === "NOT_FRIENDS") {
       return (
         <button
-          className="profile-action-btn"
+          className="user-profile-action-btn"
           onClick={() => add_friend(viewedProfile.username)}
         >
           Add Friend
@@ -177,7 +178,7 @@ export default function UserProfile() {
 
     if (status === "PENDING" && isSender) {
       return (
-        <button className="profile-action-btn" disabled>
+        <button className="user-profile-action-btn" disabled>
           Request Sent
         </button>
       );
@@ -185,15 +186,15 @@ export default function UserProfile() {
 
     if (status === "PENDING" && !isSender) {
       return (
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className="user-profile-action-group">
           <button
-            className="profile-action-btn"
+            className="user-profile-action-btn"
             onClick={() => accept_friend_request(viewedProfile.username)}
           >
             Accept Friend
           </button>
           <button
-            className="profile-action-btn secondary"
+            className="user-profile-action-btn secondary"
             onClick={() => decline_friend_request(viewedProfile.username)}
           >
             Decline
@@ -205,7 +206,7 @@ export default function UserProfile() {
     if (status === "ACCEPTED") {
       return (
         <button
-          className="profile-action-btn danger"
+          className="user-profile-action-btn danger"
           onClick={() => remove_friend(viewedProfile.username)}
         >
           Remove Friend
@@ -215,7 +216,7 @@ export default function UserProfile() {
 
     return (
       <button
-        className="profile-action-btn"
+        className="user-profile-action-btn"
         onClick={() => add_friend(viewedProfile.username)}
       >
         Add Friend
@@ -233,12 +234,12 @@ export default function UserProfile() {
         <img
           src={post.media}
           alt={post.subject || "Post media"}
-          className="post-media"
+          className="user-profile-post-media"
         />
       )}
 
       {post.media && post.media_type === "video" && (
-        <video src={post.media} controls className="post-media" />
+        <video src={post.media} controls className="user-profile-post-media" />
       )}
     </>
   );
@@ -250,45 +251,46 @@ export default function UserProfile() {
         trigger={null}
         collapsible
         collapsed={collapsed}
-        className="sider"
+        className="user-profile-sider"
         width={160}
       >
         <Sidebar />
       </Sider>
 
       <Layout>
-        <Content className="profile-container">
-          <Card className="profile-header">
+        <Content className="user-profile-container">
+          <Card className="user-profile-header">
             <Avatar
               src={viewedProfile.profile_picture}
-              className="profile-avatar"
+              className="user-profile-avatar"
             />
-            <div className="user-info">
-              <div className="profile-action-row">
+
+            <div className="viewed-user-info">
+              <div className="user-profile-action-row">
                 {renderFriendshipAction()}
               </div>
 
-              <h2>{viewedProfile.username}</h2>
-              <p>Main Platform: {viewedProfile.main_platform || "Not set"}</p>
+              <div>
+                <h2>{viewedProfile.username}</h2>
+                <p>Main Platform: {viewedProfile.main_platform || "Not set"}</p>
+              </div>
 
-              <div className="stats">
-                <div className="stat-item">
-                  <span className="stat-label">Weekly Hours</span>
-                  <span className="stat-value">{viewedProfile.hours ?? 0}</span>
+              <div className="viewed-user-stats">
+                <div className="viewed-stat-card">
+                  <span className="viewed-stat-label">Weekly Hours</span>
+                  <span className="viewed-stat-value">
+                    {viewedProfile.hours ?? 0}
+                  </span>
                 </div>
 
-                <div className="stat-item">
-                  <span className="stat-label">Favorite Game</span>
+                <div className="viewed-stat-card">
+                  <span className="viewed-stat-label">Favorite Game</span>
                   <span
-                    className="stat-value"
-                    style={{
-                      cursor: viewedProfile.favorite_game?.community
-                        ? "pointer"
-                        : "default",
-                      textDecoration: viewedProfile.favorite_game?.community
-                        ? "underline"
-                        : "none",
-                    }}
+                    className={
+                      viewedProfile.favorite_game?.community
+                        ? "viewed-stat-value clickable"
+                        : "viewed-stat-value"
+                    }
                     onClick={handleFavoriteGameClick}
                   >
                     {viewedProfile.favorite_game?.title || "None"}
@@ -298,41 +300,49 @@ export default function UserProfile() {
             </div>
           </Card>
 
-          <div className="profile-panels">
-            <Card className="panel">
-              <h2 className="panel-title">Posts</h2>
+          <div className="user-profile-panels">
+            <Card className="user-profile-panel">
+              <h2 className="user-profile-panel-title">Posts</h2>
 
               {postsLoading && (
-                <p className="profile-posts-loading">Loading posts...</p>
+                <p className="user-profile-posts-loading">Loading posts...</p>
               )}
+
               {postsError && (
-                <p className="profile-posts-error">{postsError}</p>
+                <p className="user-profile-posts-error">{postsError}</p>
               )}
+
               {!postsLoading && !postsError && userPosts.length === 0 && (
-                <p className="profile-posts-empty">No posts yet.</p>
+                <p className="user-profile-posts-empty">No posts yet.</p>
               )}
 
               {!postsLoading && !postsError && userPosts.length > 0 && (
-                <div className="profile-posts-list">
+                <div className="user-profile-posts-list">
                   {userPosts.map((post) => (
-                    <div key={post.id} className="profile-post-card">
+                    <div key={post.id} className="user-profile-post-card">
                       {post.subject && (
-                        <p className="profile-post-subject">{post.subject}</p>
+                        <p className="user-profile-post-subject">
+                          {post.subject}
+                        </p>
                       )}
-                      <p className="profile-post-body">{post.body}</p>
+
+                      <p className="user-profile-post-body">{post.body}</p>
+
                       {renderPostMedia(post)}
-                      <div className="profile-post-footer">
-                        <span className="profile-post-time">
+
+                      <div className="user-profile-post-footer">
+                        <span className="user-profile-post-time">
                           {new Date(post.creation).toLocaleString()}
                         </span>
-                        <div className="profile-post-stats">
-                          <span className="profile-post-stat">
+
+                        <div className="user-profile-post-stats">
+                          <span className="user-profile-post-stat">
                             ♥ {post.like_count ?? 0}
                           </span>
-                          <span className="profile-post-stat">
+                          <span className="user-profile-post-stat">
                             👎 {post.dislike_count ?? 0}
                           </span>
-                          <span className="profile-post-stat">
+                          <span className="user-profile-post-stat">
                             💬 {post.comment_count ?? 0}
                           </span>
                         </div>
